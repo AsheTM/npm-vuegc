@@ -12,7 +12,10 @@
     "vuegc": "vuegc.js"
   },
   "author": "AsheTM",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/AsheTM/vuegc.git"
+  },
   "dependencies": {
     "fs": "0.0.1-security",
     "path": "^0.12.7"
