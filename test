@@ -1,0 +1,18 @@
+
+            <template>
+                <div id="Test"> Test</div>
+            </template>
+
+            <script>
+            export default {
+                name: "Test", 
+                props: { }, 
+                data() { }, 
+                methods() { }
+            }
+            <script>
+
+            <style>
+
+            <style>
+        
