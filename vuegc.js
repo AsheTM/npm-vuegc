@@ -74,7 +74,7 @@ async function vuegc() {
             containerIdStyle    = `#${ componentFileName }{
     \tfont-size: 16px;
     \tline-height: 150%;${ supported.style.includes(optionalArgs.style.style) && optionalArgs.style.style != "css" 
-            ? "\t\n" + spanStyle + "\t\n" + aStyle 
+            ? "\n\t" + spanStyle + "\n\t" + aStyle 
             : "" }
     }${ optionalArgs.style.style == "css" ? "\n" + spanStyle + "\n" + aStyle : "" }`, 
     
