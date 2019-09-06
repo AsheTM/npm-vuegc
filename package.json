@@ -1,6 +1,6 @@
 {
   "name": "vuegc",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "",
   "main": "vuegc.js",
   "keywords": [
@@ -19,6 +19,8 @@
   "readme": "https://github.com/AsheTM/vuegc",
   "dependencies": {
     "fs": "0.0.1-security",
+    "handlebars": "^4.2.0",
+    "optimist": "^0.6.1",
     "path": "^0.12.7"
   }
 }
