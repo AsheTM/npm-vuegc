@@ -19,6 +19,7 @@
   "readme": "https://github.com/AsheTM/vuegc",
   "dependencies": {
     "fs": "0.0.1-security",
+    "handlebars": "^4.2.0",
     "path": "^0.12.7"
   }
 }
