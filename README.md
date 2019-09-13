@@ -1,16 +1,14 @@
 ### VueGC
 
-CLI command to generate a Vue component for VueJS MVC (not instance)
+CLI command to generate a Vue component for VueJS MVC (not instance) in /src/ folder
 
-`vuegc --name HelloWorld [--path ./component [--scoped [true|false] [--style css]]]`
+`vuegc --name HelloWord.vue [--scoped [true|false] [--style css]]`
 
 Required flag(s):
 
 * --name:   Name of the component
 
 Optional flag(s):
-
-* --path:   Path where to generate the component.vue, start from root folder of VueJS project [Default: ./component/]
 
 * --scoped: Boolean for scoped tag on style inside the file.vue [Default: true]
 
@@ -37,9 +35,11 @@ export default {
     #Helloworld{
     	font-size: 16px;
     	line-height: 150%;	
-        span{ font-weight: bold; }	
-        a{ font-style: italic; }
     }
+    span{ font-weight: bold; }	
+    a{ font-style: italic; }
 </style>
 
 ```
+
+For help section, tap `vuegc`
