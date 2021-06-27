@@ -9,7 +9,8 @@
     "cli"
   ],
   "bin": {
-    "vuegc": "vuegc.js"
+    "vuegc": "vuegc.js",
+    "viu": "viu.js"
   },
   "author": "AsheTM",
   "license": "MIT",
