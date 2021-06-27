@@ -5,13 +5,18 @@
   "main": "vuegc.js",
   "keywords": [
     "vue",
+    "generate",
     "component",
     "cli"
   ],
   "bin": {
-    "vuegc": "vuegc.js"
+    "vuegc": "vuegc.js",
+    "viu": "viu.js"
   },
-  "author": "AsheTM",
+  "author": "@ashetm",
+  "contributors": [
+    "DAWOUD Haitham"
+  ],
   "license": "MIT",
   "repository": {
     "url": "https://github.com/AsheTM/vuegc.git"
