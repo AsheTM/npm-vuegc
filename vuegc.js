@@ -203,7 +203,7 @@ function vuegc() {
     const 
         componentName       = requiredArgs.name.endsWith(".vue") ? requiredArgs.name : (requiredArgs.name + ".vue"), 
         pathComponent       = path.join(pathLaunchedCmd, "./src/", componentName), 
-        sourceTemplate      = fs.readFileSync(path.join(__dirname, "./Template.vue.sample"), { encoding: 'utf-8' }), 
+        sourceTemplate      = fs.readFileSync(path.join(__dirname, "./template/Template.vue.sample"), { encoding: 'utf-8' }), 
         compileTemplate     = Handlebars.compile(sourceTemplate), 
         dataTemplate        = {
             style:  optionalArgs.style.style, 
