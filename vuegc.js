@@ -188,14 +188,17 @@ try {
     // Checking for existing of all required arguments
     const check = _checkRequiredArgs(requiredArgs);
     switch(true) {
-        case serviceArgs.help: 
+        case !!serviceArgs.help:
             vueHelp(serviceArg);
-        case serviceArgs.component: 
+            break;
+        case serviceArgs.component:
             if(check)
                 throw check;
             vuegc();
-        case serviceArgs.view: 
+            break;
+        case serviceArgs.view:
             // Incoming
+            break;
     }
 } catch(err) {
     errorHandler(err);

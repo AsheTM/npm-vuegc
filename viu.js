@@ -61,7 +61,8 @@ const
 switch(true) {
     case serviceArgs.component: 
         viuComponentHelp();
-    case serviceArgs.help: 
+        break;
+    case !!serviceArgs.help:
     default: 
         viuHelp();
 }
