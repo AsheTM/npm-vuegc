@@ -10,8 +10,7 @@
     "cli"
   ],
   "bin": {
-    "vuegc": "vuegc.js",
-    "viu": "viu.js"
+    "vuegc": "vuegc.js"
   },
   "author": "@ashetm",
   "contributors": [
