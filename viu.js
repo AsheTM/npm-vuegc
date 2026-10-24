@@ -16,6 +16,9 @@ function getValueof(args, flag, obj = Object) {
             thatValue = arg.startsWith("--") || arg.startsWith("-") || arg;
         match = (arg == flag);
     });
+    // Flag passed as last argument
+    if(match)
+        thatValue = true;
     return thatValue;
 }
 ////////////////////////////////////////////////
