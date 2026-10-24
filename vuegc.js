@@ -158,7 +158,7 @@ const
     allArgs             = process.argv, 
     nodeFile            = allArgs[0], 
     vuegcFile           = allArgs[1], 
-    serviceArg          = "component" || allArgs[2], 
+    serviceArg          = "component", 
     args                = allArgs.slice(2), 
     requiredArgs        = {
         name:   getValueof(args, "--name", String), 
