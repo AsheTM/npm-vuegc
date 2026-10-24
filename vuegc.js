@@ -71,7 +71,7 @@ function errorHandler(err) {
     // If error spotted
     if(exit) {
         console.log("> Generating vue component failure");
-        process.exit();
+        process.exit(1);
     }
 }
 ////////////////////////////////////////////////
