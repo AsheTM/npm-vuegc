@@ -20,7 +20,7 @@ function getValueof(args, flag, obj = Object) {
     args.forEach(value => {
         if(match)
             thatValue = value.startsWith("--") || value.startsWith("-") || value;
-        match = (value == obj(flag));
+        match = (value == flag);
     });
     return thatValue;
 }
