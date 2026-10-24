@@ -226,10 +226,6 @@ function vuegc() {
     if(!content[fileName["App.vue"]].match(/(template)|(script)|(style)/gi)) 
         throw { errno: 0x0002, exit: true };
 
-    // Creating the folders for the component
-    fs.mkdirSync(path.join(pathLaunchedCmd, "./src/"));
-    console.log("\t [!] New folder(s) created [!]");
-
     // Creating the component
     fs.writeFileSync(pathComponent, compileTemplate(dataTemplate));
 
