@@ -14,7 +14,7 @@ function getValueof(args, flag, obj = Object) {
     args.forEach(arg => {
         if(match)
             thatValue = arg.startsWith("--") || arg.startsWith("-") || arg;
-        match = (arg == obj(flag));
+        match = (arg == flag);
     });
     return thatValue;
 }
