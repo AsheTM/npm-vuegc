@@ -1,7 +1,7 @@
 {
   "name": "vuegc",
   "version": "1.1.0",
-  "description": "",
+  "description": "CLI to generate a Vue 2 single-file component in your project src/ folder",
   "main": "vuegc.js",
   "files": [
     "vuegc.js",
