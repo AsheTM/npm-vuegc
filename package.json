@@ -18,9 +18,13 @@
   ],
   "license": "MIT",
   "repository": {
-    "url": "https://github.com/AsheTM/vuegc.git"
+    "type": "git",
+    "url": "git+https://github.com/AsheTM/npm-vuegc.git"
   },
-  "readme": "https://github.com/AsheTM/vuegc",
+  "homepage": "https://github.com/AsheTM/npm-vuegc#readme",
+  "bugs": {
+    "url": "https://github.com/AsheTM/npm-vuegc/issues"
+  },
   "dependencies": {
     "handlebars": "^4.7.10"
   },
