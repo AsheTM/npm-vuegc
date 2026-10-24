@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - `vuegc` crashing on startup because the help module `./services/vue-help` didn't exist ([#3](https://github.com/AsheTM/npm-vuegc/issues/3)).
 
+### Security
+- Bump `handlebars` from `^4.2.0` to `^4.7.10` to fix critical vulnerabilities (prototype pollution, JavaScript injection).
+
 ## [1.1.0] - 2019-09-07
 
 ### Added
