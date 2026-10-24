@@ -40,7 +40,8 @@ function errorHandler(err) {
     // System errors have a portable code, ours only an errno
     switch(err.code || err.errno) {
         case "EEXIST":
-            console.log("\t[!] Folder already exists [!]");
+            console.log("\t[!] Component already exists [!]");
+            exit = true;
             break;
         case "ENOENT":
             console.log("\t[!] It is not the root of Vue project [!]");
@@ -243,8 +244,8 @@ function vuegc() {
     if(!content[fileName["App.vue"]].match(/(template)|(script)|(style)/gi)) 
         throw { errno: 0x0002, exit: true };
 
-    // Creating the component
-    fs.writeFileSync(pathComponent, compileTemplate(dataTemplate));
+    // Creating the component, without overwriting an existing one
+    fs.writeFileSync(pathComponent, compileTemplate(dataTemplate), { flag: "wx" });
 
     // Generation vue component done
     console.log("> Generating vue component success");
