@@ -7,20 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-24
+
 ### Added
-- `viu` command (work in progress): new CLI entry point with sub-commands (`viu component`), currently help only.
-- Help messages moved to `services/` (`viu-help.js`, `viu-component-help.js`).
 - `-h` alias for `--help`.
-- Service and test templates in `template/`.
+- Unsupported `--style` values are rejected with a clear message ([#14](https://github.com/AsheTM/npm-vuegc/issues/14)).
+- An existing component is never overwritten: the command fails with "Component already exists" ([#19](https://github.com/AsheTM/npm-vuegc/issues/19)).
 
 ### Changed
-- Component template moved from `Template.vue.sample` to `template/Template.vue.sample`.
+- The CLI exits with code `1` on failure, so scripts and CI can detect it ([#20](https://github.com/AsheTM/npm-vuegc/issues/20)).
+- Error messages for a missing Vue project or an existing component now also work on macOS and Linux ([#18](https://github.com/AsheTM/npm-vuegc/issues/18)).
 
 ### Fixed
-- `vuegc` crashing on startup because the help module `./services/vue-help` didn't exist ([#3](https://github.com/AsheTM/npm-vuegc/issues/3)).
+- `--help` and `--scoped` were never detected ([#7](https://github.com/AsheTM/npm-vuegc/issues/7)).
+- A flag passed as last argument (`vuegc --help`, `--scoped`) was ignored ([#8](https://github.com/AsheTM/npm-vuegc/issues/8)).
+- `--scoped false` was ignored, the style was always `scoped` ([#12](https://github.com/AsheTM/npm-vuegc/issues/12)).
+- Component name was lowercased: `HelloWorld` became `Helloworld` ([#15](https://github.com/AsheTM/npm-vuegc/issues/15)).
+- `--name Hello.vue` produced a component named `Hello.vue` ([#16](https://github.com/AsheTM/npm-vuegc/issues/16)).
+- Generated script was invalid Vue 2: `data()` now returns an object and `methods` is an object ([#17](https://github.com/AsheTM/npm-vuegc/issues/17)).
+- Help and README documented `css` as the default style instead of `scss` ([#13](https://github.com/AsheTM/npm-vuegc/issues/13)).
+- npm page now links to the right repository, homepage and issues ([#24](https://github.com/AsheTM/npm-vuegc/issues/24)).
+
+### Removed
+- Unused `fs`, `path` and `optimist` dependencies: `handlebars` is the only runtime dependency ([#22](https://github.com/AsheTM/npm-vuegc/issues/22)).
 
 ### Security
 - Bump `handlebars` from `^4.2.0` to `^4.7.10` to fix critical vulnerabilities (prototype pollution, JavaScript injection).
+- Removing `optimist` drops the vulnerable `minimist` it pulled: `npm audit` reports 0 vulnerabilities for runtime dependencies.
 
 ## [1.1.0] - 2019-09-07
 
@@ -58,7 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--scoped` option for the `<style>` tag.
 - `--path` option for the output folder inside `src/` (default `./component/`).
 
-[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/29064af...develop
+[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.0...develop
+[1.2.0]: https://github.com/AsheTM/npm-vuegc/compare/29064af...v1.2.0
 [1.1.0]: https://github.com/AsheTM/npm-vuegc/compare/05d2aae...29064af
 [1.0.2]: https://github.com/AsheTM/npm-vuegc/compare/eddae3e...05d2aae
 [1.0.1]: https://github.com/AsheTM/npm-vuegc/compare/9b16c97...eddae3e
