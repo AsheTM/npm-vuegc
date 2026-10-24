@@ -57,6 +57,10 @@ function errorHandler(err) {
             console.log(`\t[!] Flag ${ err.flag } required [!]`);
             exit = true;
             break;
+        case 0x0004:
+            console.log(`\t[!] Style ${ err.style } not supported, use one of: ${ supported.style.join(", ") } [!]`);
+            exit = true;
+            break;
         default: 
             console.error(err);
             exit = true;
@@ -205,6 +209,10 @@ try {
 }
 
 function vuegc() {
+    // Checking if the style is supported
+    if(!supported.style.includes(optionalArgs.style.style))
+        throw { errno: 0x0004, style: optionalArgs.style.style, exit: true };
+
     // Initializing
     const 
         componentName       = requiredArgs.name.endsWith(".vue") ? requiredArgs.name : (requiredArgs.name + ".vue"), 
