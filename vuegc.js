@@ -176,7 +176,7 @@ const
             // 
         }, 
         style:      {
-            scoped: getValueof(args, "--scoped", Boolean) || true, 
+            scoped: getValueof(args, "--scoped", Boolean) !== "false", 
             style:  getValueof(args, "--style", String)   || "scss", 
         }
     }, 
