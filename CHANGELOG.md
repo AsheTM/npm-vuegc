@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `-h` alias for `--help`.
 - Unsupported `--style` values are rejected with a clear message ([#14](https://github.com/AsheTM/npm-vuegc/issues/14)).
 - An existing component is never overwritten: the command fails with "Component already exists" ([#19](https://github.com/AsheTM/npm-vuegc/issues/19)).
+- MIT `LICENSE` file ([#48](https://github.com/AsheTM/npm-vuegc/issues/48)).
 
 ### Changed
 - The CLI exits with code `1` on failure, so scripts and CI can detect it ([#20](https://github.com/AsheTM/npm-vuegc/issues/20)).
