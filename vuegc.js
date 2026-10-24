@@ -37,11 +37,12 @@ function getValueof(args, flag, obj = Object) {
  */
 function errorHandler(err) {
     let exit = err.exit;
-    switch(err.errno) {
-        case -4075:
+    // System errors have a portable code, ours only an errno
+    switch(err.code || err.errno) {
+        case "EEXIST":
             console.log("\t[!] Folder already exists [!]");
             break;
-        case -4058: 
+        case "ENOENT":
             console.log("\t[!] It is not the root of Vue project [!]");
             exit = true;
             break;
