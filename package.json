@@ -27,5 +27,9 @@
     "handlebars": "^4.2.0",
     "optimist": "^0.6.1",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "jest": "^24.9.0"
   }
 }
