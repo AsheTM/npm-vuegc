@@ -33,7 +33,7 @@ const
     nodeFile            = allArgs[0], 
     vuegcFile           = allArgs[1], 
     serviceArg          = allArgs[2], 
-    args                = allArgs.slice(-1 * (allArgs.length - 3)), 
+    args                = allArgs.slice(3), 
     requiredArgs        = {
         name:   getValueof(args, "--name", String), 
     }, 
