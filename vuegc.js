@@ -158,10 +158,10 @@ const
     serviceArg          = "component" || allArgs[2], 
     args                = allArgs.slice(-1 * (allArgs.length - 2)), 
     requiredArgs        = {
-        name:   getValueOf(args, "--name", String), 
+        name:   getValueof(args, "--name", String), 
     }, 
     serviceArgs         = {
-        help:       getValueOf(args, "--help", Boolean) || getValueof(args, "-h", Boolean) || args.length == 0, 
+        help:       getValueof(args, "--help", Boolean) || getValueof(args, "-h", Boolean) || args.length == 0, 
         component:  true, 
         view:       false, 
     }, 
@@ -173,8 +173,8 @@ const
             // 
         }, 
         style:      {
-            scoped: getValueOf(args, "--scoped", Boolean) || true, 
-            style:  getValueOf(args, "--style", String)   || "scss", 
+            scoped: getValueof(args, "--scoped", Boolean) || true, 
+            style:  getValueof(args, "--style", String)   || "scss", 
         }
     }, 
     supported           = {
