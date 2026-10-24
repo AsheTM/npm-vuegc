@@ -22,10 +22,7 @@
   },
   "readme": "https://github.com/AsheTM/vuegc",
   "dependencies": {
-    "fs": "0.0.1-security",
-    "handlebars": "^4.7.10",
-    "optimist": "^0.6.1",
-    "path": "^0.12.7"
+    "handlebars": "^4.7.10"
   },
   "devDependencies": {
     "chai": "^4.2.0",
