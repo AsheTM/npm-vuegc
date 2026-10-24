@@ -139,7 +139,7 @@ function _registerHelperStyle(componentFileName) {
 ///////////////////Prototypes///////////////////
 ////////////////////////////////////////////////
 String.prototype.toCapitalize = function() {
-    return this.charAt(0).toUpperCase() + this.substr(1).toLowerCase();
+    return this.charAt(0).toUpperCase() + this.slice(1);
 }
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
