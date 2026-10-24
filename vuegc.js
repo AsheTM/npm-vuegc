@@ -97,7 +97,7 @@ function _checkRequiredArgs(requiredArgs) {
  *  @description    Prepare HandleBars for appending Template, Style and Script html content
  */
 function registerHelpers() {
-    const componentFileName = requiredArgs.name.toCapitalize();
+    const componentFileName = requiredArgs.name.replace(/\.vue$/, "").toCapitalize();
     _registerHelperTemplate(componentFileName);
     _registerHelperScript(componentFileName);
     _registerHelperStyle(componentFileName);
