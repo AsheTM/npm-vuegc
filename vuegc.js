@@ -113,8 +113,10 @@ function _registerHelperScript(componentFileName) {
         let result = `export default {
     name: "${ componentFileName }", 
     props: { }, 
-    data() { }, 
-    methods() { }
+    data() {
+        return { };
+    },
+    methods: { }
 }`;
         return new Handlebars.SafeString(result);
     });
