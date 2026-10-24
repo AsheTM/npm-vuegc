@@ -3,6 +3,12 @@
   "version": "1.1.0",
   "description": "",
   "main": "vuegc.js",
+  "files": [
+    "vuegc.js",
+    "services/",
+    "template/",
+    "CHANGELOG.md"
+  ],
   "keywords": [
     "vue",
     "generate",
