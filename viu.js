@@ -32,11 +32,11 @@ const
     serviceArg          = allArgs[2], 
     args                = allArgs.slice(-1 * (allArgs.length - 3)), 
     requiredArgs        = {
-        name:   getValueOf(args, "--name", String), 
+        name:   getValueof(args, "--name", String), 
     }, 
     serviceArgs         = {
         help:       serviceArg == 'help' || !serviceArg
-                || getValueOf(args, "--help", Boolean) 
+                || getValueof(args, "--help", Boolean) 
                 || getValueof(args, "-h", Boolean) 
                 || args.length == 0, 
         component:  serviceArg == 'component', 
@@ -50,8 +50,8 @@ const
             // 
         }, 
         style:      {
-            scoped: getValueOf(args, "--scoped", Boolean) || true, 
-            style:  getValueOf(args, "--style", String)   || "scss", 
+            scoped: getValueof(args, "--scoped", Boolean) || true, 
+            style:  getValueof(args, "--style", String)   || "scss", 
         }
     };
 
