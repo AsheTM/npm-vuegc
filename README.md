@@ -12,7 +12,7 @@ Optional flag(s):
 
 * --scoped: Boolean for scoped tag on style inside the file.vue [Default: true]
 
-* --style:  Pre-processor CSS [Default: css] [Value supported: css, scss, stylus]
+* --style:  Pre-processor CSS [Default: scss] [Value supported: css, scss, stylus]
 
 It generates component file .vue like this: 
 
