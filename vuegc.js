@@ -6,7 +6,7 @@ const
     Handlebars  = require("handlebars");
 
 const 
-    vueHelp     = require("./services/viu-component-help");
+    vueHelp     = require("./services/vuegc-help");
 
 
 //////////////////Error Handler/////////////////
