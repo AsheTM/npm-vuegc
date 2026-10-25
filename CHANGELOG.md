@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-25
+
 ### Added
 - `--force` overwrites an existing component on purpose and says so; without it, the "Component already exists" message now suggests `--force`. Library: `vuegc({ force: true })` ([#69](https://github.com/AsheTM/npm-vuegc/issues/69)).
 - `--blank` generates an empty `<div></div>` template and an empty `<style>`, without the demo content; the script skeleton is kept. Library: `vuegc({ blank: true })` ([#67](https://github.com/AsheTM/npm-vuegc/issues/67)).
@@ -97,7 +99,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--scoped` option for the `<style>` tag.
 - `--path` option for the output folder inside `src/` (default `./component/`).
 
-[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.1...develop
+[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/v1.3.0...develop
+[1.3.0]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/AsheTM/npm-vuegc/compare/29064af...v1.2.0
 [1.1.0]: https://github.com/AsheTM/npm-vuegc/compare/05d2aae...29064af
