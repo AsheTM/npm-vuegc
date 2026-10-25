@@ -15,7 +15,7 @@ Or run it without installing: `npx vuegc --name HelloWorld`.
 Run it at the root of a Vue project (the folder that contains `src/main.js` and `src/App.vue`):
 
 ``` sh
-vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style]
+vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items]
 ```
 
 | Flag | Description | Default |
@@ -28,6 +28,7 @@ vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path compon
 | `--force` | Overwrite the component if it already exists | `false` |
 | `--dry-run` | Print the component instead of writing it; same checks as a real run | `false` |
 | `--no-template`, `--no-script`, `--no-style` | Leave the section out (at least one must remain) | `false` |
+| `--props` | Comma-separated prop names, e.g. `title,items`, declared as `title: null` (any type) | none |
 | `--help`, `-h` | Show the help (also shown without any argument) | |
 
 Examples:
