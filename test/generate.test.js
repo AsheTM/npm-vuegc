@@ -67,7 +67,7 @@ describe("vuegc --style", () => {
         expect(readComponent(project, "Hello.vue")).toMatch(/<style lang="scss"/);
     });
 
-    it.each(["css", "scss", "stylus"])("supports --style %s", (style) => {
+    it.each(["css", "scss", "sass", "less", "stylus"])("supports --style %s", (style) => {
         const { status } = runVuegc(project, ["--name", "Hello", "--style", style]);
 
         expect(status).toBe(0);

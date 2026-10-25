@@ -78,7 +78,7 @@ describe("vuegc({ ... })", () => {
     it.each([
         { label: "missing name",        options: {},                            error: { errno: 0x0003, flag: "name" } },
         { label: "name not a string",   options: { name: true },                error: { errno: 0x0003, flag: "name" } },
-        { label: "unsupported style",   options: { name: "Hello", style: "less" }, error: { errno: 0x0004, style: "less" } },
+        { label: "unsupported style",   options: { name: "Hello", style: "tailwind" }, error: { errno: 0x0004, style: "tailwind" } },
     ])("throws on $label", ({ options, error }) => {
         const err = thrown(() => vuegc({ ...options, cwd: project }));
 
@@ -112,7 +112,7 @@ describe("errorHandler(err)", () => {
 
     it.each([
         { label: "missing flag",        err: { errno: 0x0003, flag: "name", exit: true },   message: "Flag name required" },
-        { label: "unsupported style",   err: { errno: 0x0004, style: "less", exit: true },  message: "Style less not supported, use one of: css, scss, stylus" },
+        { label: "unsupported style",   err: { errno: 0x0004, style: "tailwind", exit: true },  message: "Style tailwind not supported, use one of: css, scss, sass, less, stylus" },
         { label: "path outside src/",   err: { errno: 0x0005, path: "../x", exit: true },   message: 'Path "../x" must be a folder inside src/' },
         { label: "existing component",  err: { code: "EEXIST" },                            message: "Component already exists" },
         { label: "not a Vue project",   err: { code: "ENOENT" },                            message: "It is not the root of Vue project" },

@@ -1,11 +1,17 @@
+{{#if sections.template}}
 <template>
     {{defaultTemplate}}
 </template>
+{{/if}}
+{{#if sections.script}}
 
 <script>
 {{defaultScript}}
 </script>
+{{/if}}
+{{#if sections.style}}
 
 <style lang="{{style}}"{{scoped}}>
 {{defaultStyle}}
 </style>
+{{/if}}

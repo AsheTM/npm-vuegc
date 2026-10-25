@@ -24,6 +24,8 @@ describe("generated component format", () => {
         { label: "default (scss, scoped)",  options: {} },
         { label: "--style css",             options: { style: "css" } },
         { label: "--style stylus",          options: { style: "stylus" } },
+        { label: "--style less",            options: { style: "less" } },
+        { label: "--style sass",            options: { style: "sass" } },
         { label: "--scoped false",          options: { scoped: false } },
         { label: "--blank",                 options: { blank: true } },
     ])("matches the snapshot: $label", ({ options }) => {
@@ -33,7 +35,7 @@ describe("generated component format", () => {
     });
 
     // Rules that must hold for every variant, independently of the snapshots
-    it.each([{}, { style: "css" }, { style: "stylus" }, { blank: true }])("is clean: %o", (options) => {
+    it.each([{}, { style: "css" }, { style: "sass" }, { style: "less" }, { style: "stylus" }, { blank: true }])("is clean: %o", (options) => {
         const content = fs.readFileSync(vuegc({ name: "HelloWorld", cwd: project, ...options }), "utf-8");
 
         expect(content).not.toContain("\r");            // LF only (#75)
