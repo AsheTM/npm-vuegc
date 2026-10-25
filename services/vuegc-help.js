@@ -1,14 +1,13 @@
 
 module.exports = function() {
     console.log(`
-__       __  _    _    _
-\\ \\     / / | |  | |  | |
- \\ \\   / /  | |  | |  | |
-  \\ \\ / /   | |  | |  | |
-   \\ v /    | |  | |  | |
-    \\_/     |_|  |______|
+__     ___   _ _____ ____  ____
+\\ \\   / / | | | ____/ ___|/ ___|
+ \\ \\ / /| | | |  _|| |  _| |
+  \\ V / | |_| | |__| |_| | |___
+   \\_/   \\___/|_____\\____|\\____|
 
-viu --name HelloWord.vue [--scoped [true|false] [--style css]]
+vuegc --name HelloWorld.vue [--scoped [true|false] [--style css]]
 
 Required flag(s):
 --name:     Name of the component
