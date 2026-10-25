@@ -1,7 +1,7 @@
 {
   "name": "vuegc",
   "version": "1.4.0",
-  "description": "CLI to generate a Vue 2 single-file component in your project src/ folder",
+  "description": "CLI to generate a Vue 3 single-file component (script setup, TypeScript) in your project src/ folder",
   "main": "vuegc.js",
   "types": "vuegc.d.ts",
   "files": [
@@ -17,8 +17,11 @@
   },
   "keywords": [
     "vue",
+    "vue3",
     "generate",
     "component",
+    "script-setup",
+    "typescript",
     "cli"
   ],
   "bin": {
