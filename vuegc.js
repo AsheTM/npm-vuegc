@@ -67,6 +67,10 @@ function errorHandler(err) {
             console.log(`\t[!] Path "${ err.path }" must be a folder inside src/, e.g. --path components [!]`);
             exit = true;
             break;
+        case 0x0006:
+            console.log("\t[!] A component needs at least one section: don't use --no-template, --no-script and --no-style together [!]");
+            exit = true;
+            break;
         default: 
             console.error(err);
             exit = true;
@@ -195,6 +199,9 @@ if(require.main === module) {
             blank:      _isOn(getValueof(args, "--blank", Boolean)),
             force:      _isOn(getValueof(args, "--force", Boolean)),
             dryRun:     _isOn(getValueof(args, "--dry-run", Boolean)),
+            noTemplate: _isOn(getValueof(args, "--no-template", Boolean)),
+            noScript:   _isOn(getValueof(args, "--no-script", Boolean)),
+            noStyle:    _isOn(getValueof(args, "--no-style", Boolean)),
             style:      {
                 scoped: getValueof(args, "--scoped", Boolean) !== "false",
                 style:  getValueof(args, "--style", String)   || "scss",
@@ -216,7 +223,10 @@ if(require.main === module) {
                 path:   optionalArgs.path === null ? undefined : optionalArgs.path,
                 blank:  optionalArgs.blank,
                 force:  optionalArgs.force,
-                dryRun: optionalArgs.dryRun
+                dryRun: optionalArgs.dryRun,
+                noTemplate: optionalArgs.noTemplate,
+                noScript:   optionalArgs.noScript,
+                noStyle:    optionalArgs.noStyle
             });
         }
     } catch(err) {
@@ -228,7 +238,7 @@ if(require.main === module) {
  *  @description    Generate a Vue component in <cwd>/src/<path>/ (dryRun: print it, write nothing)
  *  @returns        Path of the generated component
  */
-function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank = false, force = false, dryRun = false, cwd = process.cwd() } = {}) {
+function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, cwd = process.cwd() } = {}) {
     // Checking the required name
     if(typeof name !== "string" || !name)
         throw { errno: 0x0003, flag: "name", exit: true };
@@ -236,6 +246,10 @@ function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank =
     // Checking if the style is supported
     if(!supported.style.includes(style))
         throw { errno: 0x0004, style: style, exit: true };
+
+    // Checking at least one section remains
+    if(noTemplate && noScript && noStyle)
+        throw { errno: 0x0006, exit: true };
 
     // Checking the output folder stays inside src/
     const pathSrc = path.join(cwd, "./src/");
@@ -254,7 +268,8 @@ function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank =
         compileTemplate     = Handlebars.compile(sourceTemplate),
         dataTemplate        = {
             style:  style,
-            scoped: scoped ? ' scoped' : ''
+            scoped: scoped ? ' scoped' : '',
+            sections: { template: !noTemplate, script: !noScript, style: !noStyle }
         };
 
     // Preparing template/script/style
@@ -274,7 +289,8 @@ function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank =
         throw { errno: 0x0002, exit: true };
 
     // LF line endings whatever the OS the template was installed on
-    let component = compileTemplate(dataTemplate).replace(/\r\n/g, "\n");
+    // (a left-out first section leaves an empty first line)
+    let component = compileTemplate(dataTemplate).replace(/\r\n/g, "\n").replace(/^\n+/, "");
     // An empty style section shouldn't keep an empty line
     if(blank)
         component = component.replace(/\n[ \t]*\n<\/style>/, "\n</style>");
