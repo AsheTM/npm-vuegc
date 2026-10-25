@@ -98,11 +98,11 @@ function _checkRequiredArgs(requiredArgs) {
 /**
  *  @description    Prepare HandleBars for appending Template, Style and Script html content
  */
-function registerHelpers() {
-    const componentFileName = requiredArgs.name.replace(/\.vue$/, "").toCapitalize();
+function registerHelpers(name, style) {
+    const componentFileName = toCapitalize(name.replace(/\.vue$/, ""));
     _registerHelperTemplate(componentFileName);
     _registerHelperScript(componentFileName);
-    _registerHelperStyle(componentFileName);
+    _registerHelperStyle(componentFileName, style);
 }
 function _registerHelperTemplate(componentFileName) {
     Handlebars.registerHelper("defaultTemplate", function(text, url) {
@@ -123,16 +123,16 @@ function _registerHelperScript(componentFileName) {
         return new Handlebars.SafeString(result);
     });
 }
-function _registerHelperStyle(componentFileName) {
+function _registerHelperStyle(componentFileName, style) {
     Handlebars.registerHelper("defaultStyle", function(text, url) {
         const spanStyle = "span{ font-weight: bold; }";
         const aStyle = "a{ font-style: italic; }";
         let result = `#${ componentFileName }{
     \tfont-size: 16px;
-    \tline-height: 150%;${ supported.style.includes(optionalArgs.style.style) && optionalArgs.style.style != "css" 
-            ? "\n\t\t" + spanStyle + "\n\t\t" + aStyle 
+    \tline-height: 150%;${ supported.style.includes(style) && style != "css"
+            ? "\n\t\t" + spanStyle + "\n\t\t" + aStyle
             : "" }
-    }${ optionalArgs.style.style == "css" ? "\n" + spanStyle + "\n" + aStyle : "" }`;
+    }${ style == "css" ? "\n" + spanStyle + "\n" + aStyle : "" }`;
         return new Handlebars.SafeString(result);
     }); 
 }
@@ -140,10 +140,10 @@ function _registerHelperStyle(componentFileName) {
 ////////////////////////////////////////////////
 
 
-///////////////////Prototypes///////////////////
+/////////////////////Utils//////////////////////
 ////////////////////////////////////////////////
-String.prototype.toCapitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
+function toCapitalize(text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
 }
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
@@ -153,84 +153,97 @@ String.prototype.toCapitalize = function() {
 /////////////////Start//////////////////
 ////////////////////////////////////////
 // Main Constants
-const 
-    pathLaunchedCmd     = process.cwd(), 
+const
     fileName            = {
-        "main.js": "main.js", 
+        "main.js": "main.js",
         "App.vue": "App.vue"
-    }, 
-    rootVueProject      = {
-        "main.js":  path.join(pathLaunchedCmd, './src/', fileName['main.js']), 
-        "App.vue":  path.join(pathLaunchedCmd, './src/', fileName['App.vue'])
-    }, 
-    allArgs             = process.argv, 
-    nodeFile            = allArgs[0], 
-    vuegcFile           = allArgs[1], 
-    serviceArg          = "component", 
-    args                = allArgs.slice(2), 
-    requiredArgs        = {
-        name:   getValueof(args, "--name", String), 
-    }, 
-    serviceArgs         = {
-        help:       getValueof(args, "--help", Boolean) || getValueof(args, "-h", Boolean) || args.length == 0, 
-        component:  true, 
-        view:       false, 
-    }, 
-    optionalArgs        = {
-        template:   {
-            // 
-        }, 
-        script:     {
-            // 
-        }, 
-        style:      {
-            scoped: getValueof(args, "--scoped", Boolean) !== "false", 
-            style:  getValueof(args, "--style", String)   || "scss", 
-        }
-    }, 
+    },
     supported           = {
         style:  ["css", "scss", "stylus"]
     };
 
-try {
-    // Checking for existing of all required arguments
-    const check = _checkRequiredArgs(requiredArgs);
-    switch(true) {
-        case !!serviceArgs.help:
-            vueHelp(serviceArg);
-            break;
-        case serviceArgs.component:
-            if(check)
-                throw check;
-            vuegc();
-            break;
-        case serviceArgs.view:
-            // Incoming
-            break;
+// Run the CLI only when launched as a command, not when required
+if(require.main === module) {
+    const
+        allArgs             = process.argv,
+        args                = allArgs.slice(2),
+        requiredArgs        = {
+            name:   getValueof(args, "--name", String),
+        },
+        serviceArgs         = {
+            help:       getValueof(args, "--help", Boolean) || getValueof(args, "-h", Boolean) || args.length == 0,
+            component:  true,
+            view:       false,
+        },
+        optionalArgs        = {
+            template:   {
+                //
+            },
+            script:     {
+                //
+            },
+            style:      {
+                scoped: getValueof(args, "--scoped", Boolean) !== "false",
+                style:  getValueof(args, "--style", String)   || "scss",
+            }
+        };
+
+    try {
+        // Checking for existing of all required arguments
+        const check = _checkRequiredArgs(requiredArgs);
+        switch(true) {
+            case !!serviceArgs.help:
+                vueHelp();
+                break;
+            case serviceArgs.component:
+                if(check)
+                    throw check;
+                vuegc({
+                    name:   requiredArgs.name,
+                    style:  optionalArgs.style.style,
+                    scoped: optionalArgs.style.scoped
+                });
+                break;
+            case serviceArgs.view:
+                // Incoming
+                break;
+        }
+    } catch(err) {
+        errorHandler(err);
     }
-} catch(err) {
-    errorHandler(err);
 }
 
-function vuegc() {
+/**
+ *  @description    Generate a Vue component in <cwd>/src/
+ *  @returns        Path of the generated component
+ */
+function vuegc({ name, style = "scss", scoped = true, cwd = process.cwd() } = {}) {
+    // Checking the required name
+    if(typeof name !== "string" || !name)
+        throw { errno: 0x0003, flag: "name", exit: true };
+
     // Checking if the style is supported
-    if(!supported.style.includes(optionalArgs.style.style))
-        throw { errno: 0x0004, style: optionalArgs.style.style, exit: true };
+    if(!supported.style.includes(style))
+        throw { errno: 0x0004, style: style, exit: true };
 
     // Initializing
-    const 
-        componentName       = requiredArgs.name.endsWith(".vue") ? requiredArgs.name : (requiredArgs.name + ".vue"), 
-        pathComponent       = path.join(pathLaunchedCmd, "./src/", componentName), 
-        sourceTemplate      = fs.readFileSync(path.join(__dirname, "./template/Template.vue.sample"), { encoding: 'utf-8' }), 
-        compileTemplate     = Handlebars.compile(sourceTemplate), 
+    const
+        componentName       = name.endsWith(".vue") ? name : (name + ".vue"),
+        pathComponent       = path.join(cwd, "./src/", componentName),
+        rootVueProject      = {
+            "main.js":  path.join(cwd, './src/', fileName['main.js']),
+            "App.vue":  path.join(cwd, './src/', fileName['App.vue'])
+        },
+        sourceTemplate      = fs.readFileSync(path.join(__dirname, "./template/Template.vue.sample"), { encoding: 'utf-8' }),
+        compileTemplate     = Handlebars.compile(sourceTemplate),
         dataTemplate        = {
-            style:  optionalArgs.style.style, 
-            scoped: optionalArgs.style.scoped ? ' scoped' : ''
+            style:  style,
+            scoped: scoped ? ' scoped' : ''
         };
-    
+
     // Preparing template/script/style
-    registerHelpers();
-    
+    registerHelpers(name, style);
+
     // Start to generating vue component
     console.log("> Generating vue component starting");
 
@@ -249,4 +262,7 @@ function vuegc() {
 
     // Generation vue component done
     console.log("> Generating vue component success");
+    return pathComponent;
 }
+
+module.exports = { vuegc, errorHandler };
