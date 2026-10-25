@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-10-25
+
 ### Added
 - TypeScript types for the library (`vuegc.d.ts`, `"types"` in `package.json`): `vuegc(options)`, `errorHandler(err)`, `VuegcOptions`, `VuegcError`, `VuegcStyle`, with JSDoc and defaults; checked by type tests ([#93](https://github.com/AsheTM/npm-vuegc/issues/93)).
 - `--module` generates CSS modules instead of a scoped style: `<style module>`, a `.root` class used through `:class="$style.root"` (plain CSS rules prefixed by `.root` to stay local); `--no-style` is rejected. Library: `vuegc({ cssModule: true })` ([#91](https://github.com/AsheTM/npm-vuegc/issues/91)).
@@ -118,7 +120,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--scoped` option for the `<style>` tag.
 - `--path` option for the output folder inside `src/` (default `./component/`).
 
-[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/v1.3.1...develop
+[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/v1.4.0...develop
+[1.4.0]: https://github.com/AsheTM/npm-vuegc/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/AsheTM/npm-vuegc/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.0...v1.2.1
