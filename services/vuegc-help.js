@@ -14,7 +14,7 @@ Required flag(s):
 
 Optional flag(s):
 --scoped:   Boolean for scoped tag on style inside the file.vue [Default: true]
---style:    Pre-processor CSS [Default: scss] [Value supported: css, scss, stylus]
+--style:    Pre-processor CSS [Default: scss] [Value supported: css, scss, sass, less, stylus]
 --path:     Folder inside src/ for the component, created if missing [Default: src/]
 --blank:    Empty template and style, without the demo content [Default: false]
 --force:    Overwrite the component if it already exists [Default: false]

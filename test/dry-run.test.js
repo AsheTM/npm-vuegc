@@ -40,7 +40,7 @@ describe("vuegc --dry-run", () => {
     // A dry run predicts the real run: same errors, same exit code
     it.each([
         { label: "missing --name",      args: ["--dry-run"],                                   message: /Flag name required/ },
-        { label: "unsupported style",   args: ["--name", "Hello", "--style", "less", "--dry-run"], message: /Style less not supported/ },
+        { label: "unsupported style",   args: ["--name", "Hello", "--style", "tailwind", "--dry-run"], message: /Style tailwind not supported/ },
         { label: "path outside src/",   args: ["--name", "Hello", "--path", "..", "--dry-run"],  message: /must be a folder inside src\// },
     ])("fails like a real run: $label", ({ args, message }) => {
         const { status, stdout } = runVuegc(project, args);

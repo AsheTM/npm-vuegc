@@ -151,6 +151,16 @@ function _registerHelperStyle(componentFileName, style, blank) {
     Handlebars.registerHelper("defaultStyle", function(text, url) {
         if(blank)
             return "";
+        // Sass indented syntax: no braces, no semicolons, nesting by indentation
+        if(style == "sass")
+            return new Handlebars.SafeString(`#${ componentFileName }
+    font-size: 16px
+    line-height: 150%
+
+    span
+        font-weight: bold
+    a
+        font-style: italic`);
         const spanStyle = "span { font-weight: bold; }";
         const aStyle = "a { font-style: italic; }";
         // Pre-processors support nesting, plain CSS gets the rules after the block
@@ -202,7 +212,7 @@ const
         "App.vue": "App.vue"
     },
     supported           = {
-        style:  ["css", "scss", "stylus"]
+        style:  ["css", "scss", "sass", "less", "stylus"]
     };
 
 // Run the CLI only when launched as a command, not when required
