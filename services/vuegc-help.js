@@ -7,7 +7,7 @@ __     ___   _ _____ ____  ____
   \\ V / | |_| | |__| |_| | |___
    \\_/   \\___/|_____\\____|\\____|
 
-vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run]
+vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style]
 
 Required flag(s):
 --name:     Name of the component
@@ -19,6 +19,8 @@ Optional flag(s):
 --blank:    Empty template and style, without the demo content [Default: false]
 --force:    Overwrite the component if it already exists [Default: false]
 --dry-run:  Print the component instead of writing it [Default: false]
+--no-template, --no-script, --no-style:
+            Leave the section out (at least one must remain) [Default: false]
 `);
     process.exit(0);
 }
