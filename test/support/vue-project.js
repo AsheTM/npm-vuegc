@@ -7,16 +7,27 @@ const
 
 const VUEGC = path.join(__dirname, "..", "..", "vuegc.js");
 
+// Entry files: Vue 3 (Vite / Vue CLI 5) and Vue 2 (refused by vuegc 2)
+const MAIN_VUE3 = "import { createApp } from 'vue'\nimport App from './App.vue'\n\ncreateApp(App).mount('#app')\n";
+const MAIN_VUE2 = "import Vue from 'vue';\nnew Vue({ render: h => h(App) }).$mount('#app');\n";
+
 /**
- *  @description    Create a minimal Vue 2 project in a temporary folder
+ *  @description    Create a minimal Vue project in a temporary folder
  *  @returns        Path of the project root
  */
-function createVueProject() {
+function createVueProject({ entry = "main.js", main = MAIN_VUE3 } = {}) {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), "vuegc-test-"));
     fs.mkdirSync(path.join(root, "src"));
-    fs.writeFileSync(path.join(root, "src", "main.js"), "import Vue from 'vue';\nnew Vue({ render: h => h(App) }).$mount('#app');\n");
+    fs.writeFileSync(path.join(root, "src", entry), main);
     fs.writeFileSync(path.join(root, "src", "App.vue"), "<template><div id=\"app\"></div></template>\n");
     return root;
+}
+
+/**
+ *  @description    Create a minimal Vue 2 project (new Vue), for the refusal tests
+ */
+function createVue2Project() {
+    return createVueProject({ main: MAIN_VUE2 });
 }
 
 /**
@@ -47,4 +58,4 @@ function readComponent(root, fileName) {
     return fs.existsSync(file) ? fs.readFileSync(file, "utf-8") : null;
 }
 
-module.exports = { createVueProject, createEmptyFolder, removeFolder, runVuegc, readComponent };
+module.exports = { createVueProject, createVue2Project, createEmptyFolder, removeFolder, runVuegc, readComponent };

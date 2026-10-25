@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **BREAKING**: `vuegc` 2 targets **Vue 3** projects: `src/main.js` or `src/main.ts` creating the app with `createApp` / `createSSRApp`, and `src/App.vue`. A Vue 2 project (`new Vue`) is refused with a pointer to `vuegc@1`, which keeps generating Vue 2 components (`1.x` branch) ([#96](https://github.com/AsheTM/npm-vuegc/issues/96)).
+
 ## [1.4.0] - 2026-10-25
 
 ### Added
