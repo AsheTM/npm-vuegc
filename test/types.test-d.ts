@@ -25,6 +25,7 @@ describe("vuegc.d.ts", () => {
             emits: ["update:modelValue", "close"],
             cssModule: true,
             optionsApi: true,
+            ts: true,
             cwd: "/project",
         });
     });

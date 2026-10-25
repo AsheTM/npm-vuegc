@@ -35,6 +35,8 @@ export interface VuegcOptions {
     cssModule?: boolean;
     /** Options API (`export default { … }`) instead of `<script setup>`. CLI: `--options`. @default false */
     optionsApi?: boolean;
+    /** TypeScript (`lang="ts"`): typed `defineProps` / `defineEmits`, `defineComponent()` with `optionsApi`. CLI: `--ts`. @default false */
+    ts?: boolean;
     /** Root of the Vue project (the folder that contains `src/`). @default process.cwd() */
     cwd?: string;
 }

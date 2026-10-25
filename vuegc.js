@@ -134,10 +134,10 @@ function _checkRequiredArgs(requiredArgs) {
 /**
  *  @description    Prepare HandleBars for appending Template, Style and Script html content
  */
-function registerHelpers({ name, style, blank, props, emits, cssModule, optionsApi }) {
+function registerHelpers({ name, style, blank, props, emits, cssModule, optionsApi, ts }) {
     const componentFileName = toCapitalize(name.replace(/\.vue$/, ""));
     _registerHelperTemplate(componentFileName, blank, cssModule);
-    _registerHelperScript(componentFileName, props, emits, optionsApi);
+    _registerHelperScript(componentFileName, props, emits, optionsApi, ts);
     _registerHelperStyle(componentFileName, style, blank, cssModule);
 }
 function _registerHelperTemplate(componentFileName, blank, cssModule) {
@@ -150,24 +150,30 @@ function _registerHelperTemplate(componentFileName, blank, cssModule) {
         return new Handlebars.SafeString(result);
     });
 }
-function _registerHelperScript(componentFileName, props, emits, optionsApi) {
+function _registerHelperScript(componentFileName, props, emits, optionsApi, ts) {
     Handlebars.registerHelper("defaultScript", function(text, url) {
-        // null: any type (Vue 2 and 3), the user sets the real types
+        // null (unknown in TypeScript): any type, the user sets the real types
         const emitsList = `[${ emits.map(event => `"${ event }"`).join(", ") }]`;
         // <script setup> (default): only what's declared; the component name comes from the file name
         if(!optionsApi) {
             const lines = [];
+            // TypeScript: type-based declarations; event names like update:modelValue are quoted keys
+            const key = (name) => /^[A-Za-z_$][\w$]*$/.test(name) ? name : `"${ name }"`;
             if(props.length)
-                lines.push(`const props = defineProps({\n${ props.map(prop => `    ${ prop }: null`).join(",\n") }\n});`);
+                lines.push(ts
+                    ? `const props = defineProps<{\n${ props.map(prop => `    ${ prop }?: unknown;`).join("\n") }\n}>();`
+                    : `const props = defineProps({\n${ props.map(prop => `    ${ prop }: null`).join(",\n") }\n});`);
             if(emits.length)
-                lines.push(`const emit = defineEmits(${ emitsList });`);
+                lines.push(ts
+                    ? `const emit = defineEmits<{\n${ emits.map(event => `    ${ key(event) }: [...args: unknown[]];`).join("\n") }\n}>();`
+                    : `const emit = defineEmits(${ emitsList });`);
             return new Handlebars.SafeString(lines.join("\n"));
         }
-        // Options API (--options): same as vuegc 1.x, plus the emits
+        // Options API (--options): same as vuegc 1.x, plus the emits; defineComponent() for TypeScript
         const propsBlock = props.length
             ? `{\n${ props.map(prop => `        ${ prop }: null`).join(",\n") }\n    }`
             : "{ }";
-        let result = `export default {
+        const body = `{
     name: "${ componentFileName }",
     props: ${ propsBlock },${ emits.length ? `\n    emits: ${ emitsList },` : "" }
     data() {
@@ -175,6 +181,9 @@ function _registerHelperScript(componentFileName, props, emits, optionsApi) {
     },
     methods: { }
 }`;
+        let result = ts
+            ? `import { defineComponent } from "vue";\n\nexport default defineComponent(${ body });`
+            : `export default ${ body }`;
         return new Handlebars.SafeString(result);
     });
 }
@@ -296,6 +305,7 @@ if(require.main === module) {
             cssModule:  _isOn(getValueof(args, "--module", Boolean)),
             optionsApi: _isOn(getValueof(args, "--options", Boolean)),
             emits:      getValueof(args, "--emits", String),
+            ts:         _isOn(getValueof(args, "--ts", Boolean)),
             style:      {
                 scoped: getValueof(args, "--scoped", Boolean) !== "false",
                 style:  getValueof(args, "--style", String)   || "css",
@@ -324,7 +334,8 @@ if(require.main === module) {
                 props:      optionalArgs.props === null ? undefined : _parseList(optionalArgs.props),
                 cssModule:  optionalArgs.cssModule,
                 optionsApi: optionalArgs.optionsApi,
-                emits:      optionalArgs.emits === null ? undefined : _parseList(optionalArgs.emits)
+                emits:      optionalArgs.emits === null ? undefined : _parseList(optionalArgs.emits),
+                ts:         optionalArgs.ts
             });
         }
     } catch(err) {
@@ -336,7 +347,7 @@ if(require.main === module) {
  *  @description    Generate a Vue component in <cwd>/src/<path>/ (dryRun: print it, write nothing)
  *  @returns        Path of the generated component
  */
-function vuegc({ name, style = "css", scoped = true, path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, props = [], cssModule = false, optionsApi = false, emits = [], cwd = process.cwd() } = {}) {
+function vuegc({ name, style = "css", scoped = true, path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, props = [], cssModule = false, optionsApi = false, emits = [], ts = false, cwd = process.cwd() } = {}) {
     // Checking the required name
     if(typeof name !== "string" || !name)
         throw { errno: 0x0003, flag: "name", exit: true };
@@ -382,13 +393,13 @@ function vuegc({ name, style = "css", scoped = true, path: folder = "", blank = 
             style:  style,
             // <style> attribute: CSS modules replace scoped
             scoped: cssModule ? ' module' : (scoped ? ' scoped' : ''),
-            // <script> attribute: <script setup> unless the Options API is asked
-            script: optionsApi ? '' : ' setup',
+            // <script> attributes: <script setup> unless the Options API is asked, lang="ts" for TypeScript
+            script: (optionsApi ? '' : ' setup') + (ts ? ' lang="ts"' : ''),
             sections: { template: !noTemplate, script: !noScript, style: !noStyle }
         };
 
     // Preparing template/script/style
-    registerHelpers({ name, style, blank, props, emits, cssModule, optionsApi });
+    registerHelpers({ name, style, blank, props, emits, cssModule, optionsApi, ts });
 
     // Start to generating vue component
     console.log("> Generating vue component starting");

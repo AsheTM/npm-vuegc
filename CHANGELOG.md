@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `--ts` generates a TypeScript component: `<script setup lang="ts">` with type-based `defineProps<{ title?: unknown }>()` and `defineEmits<{ "update:modelValue": [...args: unknown[]] }>()`, or `defineComponent()` with `--options`. Library: `vuegc({ ts: true })` ([#104](https://github.com/AsheTM/npm-vuegc/issues/104)).
 - `--emits update,close` declares the component events: `const emit = defineEmits([...])` in `<script setup>`, `emits: [...]` with `--options`; names like `update:modelValue` accepted, duplicates removed, `--no-script` rejected. Library: `vuegc({ emits: [...] })` ([#102](https://github.com/AsheTM/npm-vuegc/issues/102)).
 
 ### Changed
