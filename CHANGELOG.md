@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Internal cleanup: unused `view` service removed, CLI dispatch simplified to `if (help) … else vuegc(…)`; no behavior change. Generating views belongs to [`@ashetm/vueg`](https://github.com/AsheTM/npm-vueg) ([#74](https://github.com/AsheTM/npm-vuegc/issues/74)).
 
+### Fixed
+- Generated component formatting: consistent 4-space indentation (`<script>` and `<style>` content at column 0), no tabs, no trailing spaces, and LF line endings whatever the OS; same CSS rules and selectors. Output locked with Vitest snapshots ([#75](https://github.com/AsheTM/npm-vuegc/issues/75)).
+
 ## [1.3.0] - 2026-10-25
 
 ### Added
