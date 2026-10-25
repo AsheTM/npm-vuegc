@@ -23,6 +23,7 @@ describe("vuegc.d.ts", () => {
             noStyle: false,
             props: ["title", "items"],
             cssModule: true,
+            optionsApi: true,
             cwd: "/project",
         });
     });

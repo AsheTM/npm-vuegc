@@ -12,25 +12,33 @@ describe("vuegc --props", () => {
     beforeEach(() => { project = createVueProject(); });
     afterEach(() => { removeFolder(project); });
 
-    it("declares each prop with an open type", () => {
+    it("declares each prop with an open type, with defineProps()", () => {
         const { status } = runVuegc(project, ["--name", "Card", "--props", "title,items"]);
 
         expect(status).toBe(0);
+        expect(readComponent(project, "Card.vue")).toContain("<script setup>\nconst props = defineProps({\n    title: null,\n    items: null\n});\n</script>");
+    });
+
+    it("declares each prop in props: { } with --options", () => {
+        runVuegc(project, ["--name", "Card", "--props", "title,items", "--options"]);
+
         expect(readComponent(project, "Card.vue")).toContain("    props: {\n        title: null,\n        items: null\n    },");
     });
 
     it("trims spaces, drops empty items and duplicates", () => {
         runVuegc(project, ["--name", "Card", "--props", " title, items,,title "]);
 
-        expect(readComponent(project, "Card.vue")).toContain("        title: null,\n        items: null\n");
+        expect(readComponent(project, "Card.vue")).toContain("    title: null,\n    items: null\n});");
     });
 
     it.each([
         { label: "no --props",       args: [] },
         { label: "only commas",     args: ["--props", ",,"] },
-    ])("keeps props: { } with $label", ({ args }) => {
+    ])("declares no props with $label", ({ args }) => {
         runVuegc(project, ["--name", "Card", ...args]);
+        expect(readComponent(project, "Card.vue")).not.toContain("defineProps");
 
+        runVuegc(project, ["--name", "Card", "--options", "--force", ...args]);
         expect(readComponent(project, "Card.vue")).toContain("    props: { },");
     });
 
