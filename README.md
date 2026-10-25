@@ -59,7 +59,11 @@ On failure, `vuegc()` throws instead of exiting; `errorHandler(err)` prints the 
 
 ``` sh
 npm install
-npm test
+npm test          # run the tests once
+npm run test:watch  # re-run on every change
 ```
 
-Tests use Node's built-in test runner (`node:test`, Node 18+): each test creates a temporary Vue project, runs `vuegc` in it, and checks the output, the exit code and the generated file.
+Tests use [Vitest](https://vitest.dev) (Node 22.12+ or 24 for development):
+
+- CLI tests create a temporary Vue project, run `vuegc` in it, and check the output, the exit code and the generated file.
+- Library tests call `vuegc()` and `errorHandler()` directly, with mocks for `console.log` and `process.exit`.
