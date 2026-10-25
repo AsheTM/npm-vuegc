@@ -49,9 +49,9 @@ An existing component is never overwritten without `--force`. On failure, `vuegc
 </template>
 
 <script>
-    export default {
-    name: "HelloWorld", 
-    props: { }, 
+export default {
+    name: "HelloWorld",
+    props: { },
     data() {
         return { };
     },
@@ -60,12 +60,13 @@ An existing component is never overwritten without `--force`. On failure, `vuegc
 </script>
 
 <style lang="scss" scoped>
-    #HelloWorld{
-    	font-size: 16px;
-    	line-height: 150%;
-		span{ font-weight: bold; }
-		a{ font-style: italic; }
-    }
+#HelloWorld {
+    font-size: 16px;
+    line-height: 150%;
+
+    span { font-weight: bold; }
+    a { font-style: italic; }
+}
 </style>
 ```
 
@@ -77,9 +78,9 @@ With `--blank`:
 </template>
 
 <script>
-    export default {
-    name: "HelloWorld", 
-    props: { }, 
+export default {
+    name: "HelloWorld",
+    props: { },
     data() {
         return { };
     },

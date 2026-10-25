@@ -119,8 +119,8 @@ function _registerHelperTemplate(componentFileName, blank) {
 function _registerHelperScript(componentFileName) {
     Handlebars.registerHelper("defaultScript", function(text, url) {
         let result = `export default {
-    name: "${ componentFileName }", 
-    props: { }, 
+    name: "${ componentFileName }",
+    props: { },
     data() {
         return { };
     },
@@ -133,14 +133,14 @@ function _registerHelperStyle(componentFileName, style, blank) {
     Handlebars.registerHelper("defaultStyle", function(text, url) {
         if(blank)
             return "";
-        const spanStyle = "span{ font-weight: bold; }";
-        const aStyle = "a{ font-style: italic; }";
-        let result = `#${ componentFileName }{
-    \tfont-size: 16px;
-    \tline-height: 150%;${ supported.style.includes(style) && style != "css"
-            ? "\n\t\t" + spanStyle + "\n\t\t" + aStyle
-            : "" }
-    }${ style == "css" ? "\n" + spanStyle + "\n" + aStyle : "" }`;
+        const spanStyle = "span { font-weight: bold; }";
+        const aStyle = "a { font-style: italic; }";
+        // Pre-processors support nesting, plain CSS gets the rules after the block
+        const nested = style != "css";
+        let result = `#${ componentFileName } {
+    font-size: 16px;
+    line-height: 150%;${ nested ? "\n\n    " + spanStyle + "\n    " + aStyle : "" }
+}${ nested ? "" : "\n" + spanStyle + "\n" + aStyle }`;
         return new Handlebars.SafeString(result);
     }); 
 }
@@ -189,21 +189,11 @@ if(require.main === module) {
         requiredArgs        = {
             name:   getValueof(args, "--name", String),
         },
-        serviceArgs         = {
-            help:       getValueof(args, "--help", Boolean) || getValueof(args, "-h", Boolean) || args.length == 0,
-            component:  true,
-            view:       false,
-        },
+        help                = getValueof(args, "--help", Boolean) || getValueof(args, "-h", Boolean) || args.length == 0,
         optionalArgs        = {
             path:       getValueof(args, "--path", String),
             blank:      _isOn(getValueof(args, "--blank", Boolean)),
             force:      _isOn(getValueof(args, "--force", Boolean)),
-            template:   {
-                //
-            },
-            script:     {
-                //
-            },
             style:      {
                 scoped: getValueof(args, "--scoped", Boolean) !== "false",
                 style:  getValueof(args, "--style", String)   || "scss",
@@ -211,27 +201,21 @@ if(require.main === module) {
         };
 
     try {
-        // Checking for existing of all required arguments
-        const check = _checkRequiredArgs(requiredArgs);
-        switch(true) {
-            case !!serviceArgs.help:
-                vueHelp();
-                break;
-            case serviceArgs.component:
-                if(check)
-                    throw check;
-                vuegc({
-                    name:   requiredArgs.name,
-                    style:  optionalArgs.style.style,
-                    scoped: optionalArgs.style.scoped,
-                    path:   optionalArgs.path === null ? undefined : optionalArgs.path,
-                    blank:  optionalArgs.blank,
-                    force:  optionalArgs.force
-                });
-                break;
-            case serviceArgs.view:
-                // Incoming
-                break;
+        if(help) {
+            vueHelp();
+        } else {
+            // Checking for existing of all required arguments
+            const check = _checkRequiredArgs(requiredArgs);
+            if(check)
+                throw check;
+            vuegc({
+                name:   requiredArgs.name,
+                style:  optionalArgs.style.style,
+                scoped: optionalArgs.style.scoped,
+                path:   optionalArgs.path === null ? undefined : optionalArgs.path,
+                blank:  optionalArgs.blank,
+                force:  optionalArgs.force
+            });
         }
     } catch(err) {
         errorHandler(err);
@@ -291,10 +275,11 @@ function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank =
     fs.mkdirSync(path.dirname(pathComponent), { recursive: true });
 
     // Creating the component, without overwriting an existing one unless forced
-    let component = compileTemplate(dataTemplate);
-    // An empty style section shouldn't keep a whitespace-only line
+    // LF line endings whatever the OS the template was installed on
+    let component = compileTemplate(dataTemplate).replace(/\r\n/g, "\n");
+    // An empty style section shouldn't keep an empty line
     if(blank)
-        component = component.replace(/(\r?\n)[ \t]*\r?\n<\/style>/, "$1</style>");
+        component = component.replace(/\n[ \t]*\n<\/style>/, "\n</style>");
     const exists = fs.existsSync(pathComponent);
     fs.writeFileSync(pathComponent, component, { flag: force ? "w" : "wx" });
     if(exists)
