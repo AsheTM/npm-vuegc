@@ -2,7 +2,7 @@
 
 CLI command to generate a Vue component for VueJS MVC (not instance) in /src/ folder
 
-`vuegc --name HelloWord.vue [--scoped [true|false] [--style css]]`
+`vuegc --name HelloWord.vue [--scoped [true|false]] [--style css] [--path components]`
 
 Required flag(s):
 
@@ -13,6 +13,8 @@ Optional flag(s):
 * --scoped: Boolean for scoped tag on style inside the file.vue [Default: true]
 
 * --style:  Pre-processor CSS [Default: scss] [Value supported: css, scss, stylus]
+
+* --path:   Folder inside src/ for the component, created if missing [Default: src/]
 
 It generates component file .vue like this: 
 
@@ -49,8 +51,8 @@ For help section, tap `vuegc`
 ``` js
 const { vuegc } = require("vuegc");
 
-// Generates <cwd>/src/HelloWorld.vue and returns its path
-vuegc({ name: "HelloWorld", style: "css", scoped: true, cwd: process.cwd() });
+// Generates <cwd>/src/components/HelloWorld.vue and returns its path
+vuegc({ name: "HelloWorld", style: "css", scoped: true, path: "components", cwd: process.cwd() });
 ```
 
 On failure, `vuegc()` throws instead of exiting; `errorHandler(err)` prints the same message as the CLI and exits.

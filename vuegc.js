@@ -63,6 +63,10 @@ function errorHandler(err) {
             console.log(`\t[!] Style ${ err.style } not supported, use one of: ${ supported.style.join(", ") } [!]`);
             exit = true;
             break;
+        case 0x0005:
+            console.log(`\t[!] Path "${ err.path }" must be a folder inside src/, e.g. --path components [!]`);
+            exit = true;
+            break;
         default: 
             console.error(err);
             exit = true;
@@ -145,6 +149,13 @@ function _registerHelperStyle(componentFileName, style) {
 function toCapitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
+// A relative folder that stays inside the base folder (no "..", not absolute)
+function _isInside(base, folder) {
+    if(typeof folder !== "string" || path.isAbsolute(folder))
+        return false;
+    const relative = path.relative(base, path.join(base, folder));
+    return relative !== ".." && !relative.startsWith(".." + path.sep);
+}
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 
@@ -176,6 +187,7 @@ if(require.main === module) {
             view:       false,
         },
         optionalArgs        = {
+            path:       getValueof(args, "--path", String),
             template:   {
                 //
             },
@@ -201,7 +213,8 @@ if(require.main === module) {
                 vuegc({
                     name:   requiredArgs.name,
                     style:  optionalArgs.style.style,
-                    scoped: optionalArgs.style.scoped
+                    scoped: optionalArgs.style.scoped,
+                    path:   optionalArgs.path === null ? undefined : optionalArgs.path
                 });
                 break;
             case serviceArgs.view:
@@ -214,10 +227,10 @@ if(require.main === module) {
 }
 
 /**
- *  @description    Generate a Vue component in <cwd>/src/
+ *  @description    Generate a Vue component in <cwd>/src/<path>/
  *  @returns        Path of the generated component
  */
-function vuegc({ name, style = "scss", scoped = true, cwd = process.cwd() } = {}) {
+function vuegc({ name, style = "scss", scoped = true, path: folder = "", cwd = process.cwd() } = {}) {
     // Checking the required name
     if(typeof name !== "string" || !name)
         throw { errno: 0x0003, flag: "name", exit: true };
@@ -226,10 +239,15 @@ function vuegc({ name, style = "scss", scoped = true, cwd = process.cwd() } = {}
     if(!supported.style.includes(style))
         throw { errno: 0x0004, style: style, exit: true };
 
+    // Checking the output folder stays inside src/
+    const pathSrc = path.join(cwd, "./src/");
+    if(!_isInside(pathSrc, folder))
+        throw { errno: 0x0005, path: typeof folder === "string" ? folder : "", exit: true };
+
     // Initializing
     const
         componentName       = name.endsWith(".vue") ? name : (name + ".vue"),
-        pathComponent       = path.join(cwd, "./src/", componentName),
+        pathComponent       = path.join(pathSrc, folder, componentName),
         rootVueProject      = {
             "main.js":  path.join(cwd, './src/', fileName['main.js']),
             "App.vue":  path.join(cwd, './src/', fileName['App.vue'])
@@ -256,6 +274,9 @@ function vuegc({ name, style = "scss", scoped = true, cwd = process.cwd() } = {}
         throw { errno: 0x0001, exit: true };
     if(!content[fileName["App.vue"]].match(/(template)|(script)|(style)/gi)) 
         throw { errno: 0x0002, exit: true };
+
+    // Creating the output folder if missing
+    fs.mkdirSync(path.dirname(pathComponent), { recursive: true });
 
     // Creating the component, without overwriting an existing one
     fs.writeFileSync(pathComponent, compileTemplate(dataTemplate), { flag: "wx" });
