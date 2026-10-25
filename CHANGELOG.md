@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `--props title,items` declares the props (`title: null`, any type in Vue 2); names must be valid JavaScript names, duplicates are removed, and `--no-script` is rejected. Library: `vuegc({ props: ["title", "items"] })` ([#83](https://github.com/AsheTM/npm-vuegc/issues/83)).
 - `--no-template`, `--no-script` and `--no-style` leave a section out; at least one must remain. Library: `vuegc({ noTemplate, noScript, noStyle })` ([#81](https://github.com/AsheTM/npm-vuegc/issues/81)).
 - `--dry-run` prints where the component would be written and its content, and writes nothing (no file, no folder); it runs the same checks as a real run, so it predicts its result. Library: `vuegc({ dryRun: true })` ([#79](https://github.com/AsheTM/npm-vuegc/issues/79)).
 
