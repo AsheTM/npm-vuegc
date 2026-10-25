@@ -9,7 +9,7 @@ export type VuegcStyle = "css" | "scss" | "sass" | "less" | "stylus";
 export interface VuegcOptions {
     /** Component name, with or without `.vue`. The first letter is capitalized for the component name. */
     name: string;
-    /** CSS pre-processor of the `<style>` section. @default "scss" */
+    /** CSS pre-processor of the `<style>` section. @default "css" */
     style?: VuegcStyle;
     /** `scoped` attribute on `<style>`. Ignored with `cssModule`. @default true */
     scoped?: boolean;

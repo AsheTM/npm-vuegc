@@ -275,7 +275,7 @@ if(require.main === module) {
             cssModule:  _isOn(getValueof(args, "--module", Boolean)),
             style:      {
                 scoped: getValueof(args, "--scoped", Boolean) !== "false",
-                style:  getValueof(args, "--style", String)   || "scss",
+                style:  getValueof(args, "--style", String)   || "css",
             }
         };
 
@@ -311,7 +311,7 @@ if(require.main === module) {
  *  @description    Generate a Vue component in <cwd>/src/<path>/ (dryRun: print it, write nothing)
  *  @returns        Path of the generated component
  */
-function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, props = [], cssModule = false, cwd = process.cwd() } = {}) {
+function vuegc({ name, style = "css", scoped = true, path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, props = [], cssModule = false, cwd = process.cwd() } = {}) {
     // Checking the required name
     if(typeof name !== "string" || !name)
         throw { errno: 0x0003, flag: "name", exit: true };

@@ -21,7 +21,7 @@ describe("generated component format", () => {
     // Snapshots: the first run saves the whole file in __snapshots__/format.test.js.snap,
     // the next runs fail if a single character changes. Update on purpose with: npx vitest run -u
     it.each([
-        { label: "default (scss, scoped)",  options: {} },
+        { label: "default (css, scoped)",  options: {} },
         { label: "--style css",             options: { style: "css" } },
         { label: "--style stylus",          options: { style: "stylus" } },
         { label: "--style less",            options: { style: "less" } },
