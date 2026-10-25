@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--no-template`, `--no-script` and `--no-style` leave a section out; at least one must remain. Library: `vuegc({ noTemplate, noScript, noStyle })` ([#81](https://github.com/AsheTM/npm-vuegc/issues/81)).
 - `--dry-run` prints where the component would be written and its content, and writes nothing (no file, no folder); it runs the same checks as a real run, so it predicts its result. Library: `vuegc({ dryRun: true })` ([#79](https://github.com/AsheTM/npm-vuegc/issues/79)).
 
+### Changed
+- Tests: timeout raised from 5 s to 20 s (`vitest.config.mjs`), so the CLI tests no longer fail on a busy machine ([#86](https://github.com/AsheTM/npm-vuegc/issues/86)).
+
 ## [1.3.1] - 2026-10-25
 
 ### Changed
