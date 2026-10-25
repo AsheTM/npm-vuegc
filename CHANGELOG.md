@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-10-25
+
+**Vue 3.** Breaking changes: Vue 3 projects only, `css` and `<script setup>` by default. For Vue 2, use vuegc 1 (`npm install -g vuegc@1`); in a Vue 3 project, `--options --style scss` gives the 1.x output.
+
 ### Added
 - `--ts` generates a TypeScript component: `<script setup lang="ts">` with type-based `defineProps<{ title?: unknown }>()` and `defineEmits<{ "update:modelValue": [...args: unknown[]] }>()`, or `defineComponent()` with `--options`. Library: `vuegc({ ts: true })` ([#104](https://github.com/AsheTM/npm-vuegc/issues/104)).
 - `--emits update,close` declares the component events: `const emit = defineEmits([...])` in `<script setup>`, `emits: [...]` with `--options`; names like `update:modelValue` accepted, duplicates removed, `--no-script` rejected. Library: `vuegc({ emits: [...] })` ([#102](https://github.com/AsheTM/npm-vuegc/issues/102)).
@@ -130,7 +134,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--scoped` option for the `<style>` tag.
 - `--path` option for the output folder inside `src/` (default `./component/`).
 
-[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/v1.4.0...develop
+[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/v2.0.0...develop
+[2.0.0]: https://github.com/AsheTM/npm-vuegc/compare/v1.4.0...v2.0.0
 [1.4.0]: https://github.com/AsheTM/npm-vuegc/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/AsheTM/npm-vuegc/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.1...v1.3.0
