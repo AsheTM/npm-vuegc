@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Automated tests of the CLI with Node's built-in test runner (`node:test`), run with `npm test` ([#57](https://github.com/AsheTM/npm-vuegc/issues/57)).
 
+### Removed
+- Unused `jest` and `chai` dev dependencies ([#58](https://github.com/AsheTM/npm-vuegc/issues/58)).
+
+### Security
+- Removing `jest@24` drops the 68 vulnerabilities `npm audit` reported in the development dependencies: `npm audit` now reports 0.
+
 ## [1.2.0] - 2026-10-24
 
 ### Added
