@@ -189,21 +189,11 @@ if(require.main === module) {
         requiredArgs        = {
             name:   getValueof(args, "--name", String),
         },
-        serviceArgs         = {
-            help:       getValueof(args, "--help", Boolean) || getValueof(args, "-h", Boolean) || args.length == 0,
-            component:  true,
-            view:       false,
-        },
+        help                = getValueof(args, "--help", Boolean) || getValueof(args, "-h", Boolean) || args.length == 0,
         optionalArgs        = {
             path:       getValueof(args, "--path", String),
             blank:      _isOn(getValueof(args, "--blank", Boolean)),
             force:      _isOn(getValueof(args, "--force", Boolean)),
-            template:   {
-                //
-            },
-            script:     {
-                //
-            },
             style:      {
                 scoped: getValueof(args, "--scoped", Boolean) !== "false",
                 style:  getValueof(args, "--style", String)   || "scss",
@@ -211,27 +201,21 @@ if(require.main === module) {
         };
 
     try {
-        // Checking for existing of all required arguments
-        const check = _checkRequiredArgs(requiredArgs);
-        switch(true) {
-            case !!serviceArgs.help:
-                vueHelp();
-                break;
-            case serviceArgs.component:
-                if(check)
-                    throw check;
-                vuegc({
-                    name:   requiredArgs.name,
-                    style:  optionalArgs.style.style,
-                    scoped: optionalArgs.style.scoped,
-                    path:   optionalArgs.path === null ? undefined : optionalArgs.path,
-                    blank:  optionalArgs.blank,
-                    force:  optionalArgs.force
-                });
-                break;
-            case serviceArgs.view:
-                // Incoming
-                break;
+        if(help) {
+            vueHelp();
+        } else {
+            // Checking for existing of all required arguments
+            const check = _checkRequiredArgs(requiredArgs);
+            if(check)
+                throw check;
+            vuegc({
+                name:   requiredArgs.name,
+                style:  optionalArgs.style.style,
+                scoped: optionalArgs.style.scoped,
+                path:   optionalArgs.path === null ? undefined : optionalArgs.path,
+                blank:  optionalArgs.blank,
+                force:  optionalArgs.force
+            });
         }
     } catch(err) {
         errorHandler(err);

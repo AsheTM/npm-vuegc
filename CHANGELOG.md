@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Internal cleanup: unused `view` service removed, CLI dispatch simplified to `if (help) … else vuegc(…)`; no behavior change. Generating views belongs to [`@ashetm/vueg`](https://github.com/AsheTM/npm-vueg) ([#74](https://github.com/AsheTM/npm-vuegc/issues/74)).
+
 ## [1.3.0] - 2026-10-25
 
 ### Added
