@@ -1,12 +1,11 @@
-
 <template>
     {{defaultTemplate}}
 </template>
 
 <script>
-    {{defaultScript}}
+{{defaultScript}}
 </script>
 
 <style lang="{{style}}"{{scoped}}>
-    {{defaultStyle}}
+{{defaultStyle}}
 </style>
