@@ -62,10 +62,10 @@ describe("vuegc({ ... })", () => {
         expect(console.log).toHaveBeenCalledWith("> Generating vue component success");
     });
 
-    it("uses scss and scoped by default", () => {
+    it("uses css and scoped by default", () => {
         vuegc({ name: "Hello", cwd: project });
 
-        expect(readComponent(project, "Hello.vue")).toContain('<style lang="scss" scoped>');
+        expect(readComponent(project, "Hello.vue")).toContain('<style lang="css" scoped>');
     });
 
     it("applies the style and scoped options", () => {

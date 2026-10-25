@@ -61,10 +61,10 @@ describe("vuegc --style", () => {
     beforeEach(() => { project = createVueProject(); });
     afterEach(() => { removeFolder(project); });
 
-    it("uses scss by default", () => {
+    it("uses css by default", () => {
         runVuegc(project, ["--name", "Hello"]);
 
-        expect(readComponent(project, "Hello.vue")).toMatch(/<style lang="scss"/);
+        expect(readComponent(project, "Hello.vue")).toMatch(/<style lang="css"/);
     });
 
     it.each(["css", "scss", "sass", "less", "stylus"])("supports --style %s", (style) => {
@@ -82,10 +82,10 @@ describe("vuegc --scoped", () => {
     afterEach(() => { removeFolder(project); });
 
     it.each([
-        { label: "(default)",       args: [],                   expected: '<style lang="scss" scoped>' },
-        { label: "--scoped",        args: ["--scoped"],         expected: '<style lang="scss" scoped>' },  // flag as last argument (#8)
-        { label: "--scoped true",   args: ["--scoped", "true"], expected: '<style lang="scss" scoped>' },
-        { label: "--scoped false",  args: ["--scoped", "false"],expected: '<style lang="scss">' },         // (#12)
+        { label: "(default)",       args: [],                   expected: '<style lang="css" scoped>' },
+        { label: "--scoped",        args: ["--scoped"],         expected: '<style lang="css" scoped>' },  // flag as last argument (#8)
+        { label: "--scoped true",   args: ["--scoped", "true"], expected: '<style lang="css" scoped>' },
+        { label: "--scoped false",  args: ["--scoped", "false"],expected: '<style lang="css">' },         // (#12)
     ])("$label -> $expected", ({ args, expected }) => {
         runVuegc(project, ["--name", "Hello", ...args]);
 

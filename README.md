@@ -21,7 +21,7 @@ vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path compon
 | Flag | Description | Default |
 |---|---|---|
 | `--name` | **Required.** Name of the component, with or without `.vue` | |
-| `--style` | CSS pre-processor: `css`, `scss`, `sass` (indented syntax), `less` or `stylus` | `scss` |
+| `--style` | CSS pre-processor: `css`, `scss`, `sass` (indented syntax), `less` or `stylus` | `css` |
 | `--scoped` | `scoped` attribute on `<style>` (`--scoped false` to remove it) | `true` |
 | `--path` | Folder inside `src/` for the component, created if missing | `src/` |
 | `--blank` | Empty template and style, without the demo content | `false` |
