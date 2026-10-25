@@ -7,7 +7,7 @@ __     ___   _ _____ ____  ____
   \\ V / | |_| | |__| |_| | |___
    \\_/   \\___/|_____\\____|\\____|
 
-vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options]
+vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options] [--ts]
 
 Required flag(s):
 --name:     Name of the component
@@ -25,6 +25,7 @@ Optional flag(s):
 --emits:    Comma-separated event names, e.g. update:modelValue [Default: none]
 --module:   CSS modules (<style module> + $style) instead of scoped [Default: false]
 --options:  Options API (export default { ... }) instead of <script setup> [Default: false]
+--ts:       TypeScript (lang="ts"): typed props and events [Default: false]
 `);
     process.exit(0);
 }

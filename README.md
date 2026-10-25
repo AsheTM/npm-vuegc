@@ -15,7 +15,7 @@ Or run it without installing: `npx vuegc --name HelloWorld`.
 Run it at the root of a Vue project (the folder that contains `src/main.js` and `src/App.vue`):
 
 ``` sh
-vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options]
+vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options] [--ts]
 ```
 
 | Flag | Description | Default |
@@ -32,6 +32,7 @@ vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path compon
 | `--emits` | Comma-separated event names, e.g. `update:modelValue,close`: `defineEmits([...])` / `emits: [...]` | none |
 | `--module` | CSS modules: `<style module>` and `:class="$style.root"` instead of `scoped` | `false` |
 | `--options` | Options API (`export default { name, props, data, methods }`) instead of `<script setup>` | `false` |
+| `--ts` | TypeScript: `lang="ts"`, typed `defineProps<{ … }>()` / `defineEmits<{ … }>()`, `defineComponent()` with `--options` | `false` |
 | `--help`, `-h` | Show the help (also shown without any argument) | |
 
 Examples:
