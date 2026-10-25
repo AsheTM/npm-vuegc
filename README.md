@@ -15,7 +15,7 @@ Or run it without installing: `npx vuegc --name HelloWorld`.
 Run it at the root of a Vue project (the folder that contains `src/main.js` and `src/App.vue`):
 
 ``` sh
-vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force]
+vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run]
 ```
 
 | Flag | Description | Default |
@@ -26,6 +26,7 @@ vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path compon
 | `--path` | Folder inside `src/` for the component, created if missing | `src/` |
 | `--blank` | Empty template and style, without the demo content | `false` |
 | `--force` | Overwrite the component if it already exists | `false` |
+| `--dry-run` | Print the component instead of writing it; same checks as a real run | `false` |
 | `--help`, `-h` | Show the help (also shown without any argument) | |
 
 Examples:

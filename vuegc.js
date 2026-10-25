@@ -194,6 +194,7 @@ if(require.main === module) {
             path:       getValueof(args, "--path", String),
             blank:      _isOn(getValueof(args, "--blank", Boolean)),
             force:      _isOn(getValueof(args, "--force", Boolean)),
+            dryRun:     _isOn(getValueof(args, "--dry-run", Boolean)),
             style:      {
                 scoped: getValueof(args, "--scoped", Boolean) !== "false",
                 style:  getValueof(args, "--style", String)   || "scss",
@@ -214,7 +215,8 @@ if(require.main === module) {
                 scoped: optionalArgs.style.scoped,
                 path:   optionalArgs.path === null ? undefined : optionalArgs.path,
                 blank:  optionalArgs.blank,
-                force:  optionalArgs.force
+                force:  optionalArgs.force,
+                dryRun: optionalArgs.dryRun
             });
         }
     } catch(err) {
@@ -223,10 +225,10 @@ if(require.main === module) {
 }
 
 /**
- *  @description    Generate a Vue component in <cwd>/src/<path>/
+ *  @description    Generate a Vue component in <cwd>/src/<path>/ (dryRun: print it, write nothing)
  *  @returns        Path of the generated component
  */
-function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank = false, force = false, cwd = process.cwd() } = {}) {
+function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank = false, force = false, dryRun = false, cwd = process.cwd() } = {}) {
     // Checking the required name
     if(typeof name !== "string" || !name)
         throw { errno: 0x0003, flag: "name", exit: true };
@@ -271,16 +273,27 @@ function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank =
     if(!content[fileName["App.vue"]].match(/(template)|(script)|(style)/gi)) 
         throw { errno: 0x0002, exit: true };
 
-    // Creating the output folder if missing
-    fs.mkdirSync(path.dirname(pathComponent), { recursive: true });
-
-    // Creating the component, without overwriting an existing one unless forced
     // LF line endings whatever the OS the template was installed on
     let component = compileTemplate(dataTemplate).replace(/\r\n/g, "\n");
     // An empty style section shouldn't keep an empty line
     if(blank)
         component = component.replace(/\n[ \t]*\n<\/style>/, "\n</style>");
     const exists = fs.existsSync(pathComponent);
+
+    // Dry run: same checks as a real run, but print instead of writing
+    if(dryRun) {
+        if(exists && !force)
+            throw { code: "EEXIST", exit: true };
+        console.log(`> Dry run, nothing written: ${ path.relative(cwd, pathComponent).split(path.sep).join("/") }\n`);
+        console.log(component);
+        console.log("> Generating vue component success");
+        return pathComponent;
+    }
+
+    // Creating the output folder if missing
+    fs.mkdirSync(path.dirname(pathComponent), { recursive: true });
+
+    // Creating the component, without overwriting an existing one unless forced
     fs.writeFileSync(pathComponent, component, { flag: force ? "w" : "wx" });
     if(exists)
         console.log("\t[!] Existing component overwritten [!]");

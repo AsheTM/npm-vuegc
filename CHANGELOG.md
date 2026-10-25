@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `--dry-run` prints where the component would be written and its content, and writes nothing (no file, no folder); it runs the same checks as a real run, so it predicts its result. Library: `vuegc({ dryRun: true })` ([#79](https://github.com/AsheTM/npm-vuegc/issues/79)).
+
 ## [1.3.1] - 2026-10-25
 
 ### Changed
