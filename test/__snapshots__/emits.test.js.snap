@@ -1,0 +1,42 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`vuegc({ emits }) > matches the snapshot: options 1`] = `
+"<template>
+    <div></div>
+</template>
+
+<script>
+export default {
+    name: "Card",
+    props: {
+        title: null
+    },
+    emits: ["update:modelValue", "close"],
+    data() {
+        return { };
+    },
+    methods: { }
+}
+</script>
+
+<style lang="css" scoped>
+</style>
+"
+`;
+
+exports[`vuegc({ emits }) > matches the snapshot: setup 1`] = `
+"<template>
+    <div></div>
+</template>
+
+<script setup>
+const props = defineProps({
+    title: null
+});
+const emit = defineEmits(["update:modelValue", "close"]);
+</script>
+
+<style lang="css" scoped>
+</style>
+"
+`;
