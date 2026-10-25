@@ -113,6 +113,7 @@ describe("errorHandler(err)", () => {
     it.each([
         { label: "missing flag",        err: { errno: 0x0003, flag: "name", exit: true },   message: "Flag name required" },
         { label: "unsupported style",   err: { errno: 0x0004, style: "less", exit: true },  message: "Style less not supported, use one of: css, scss, stylus" },
+        { label: "path outside src/",   err: { errno: 0x0005, path: "../x", exit: true },   message: 'Path "../x" must be a folder inside src/' },
         { label: "existing component",  err: { code: "EEXIST" },                            message: "Component already exists" },
         { label: "not a Vue project",   err: { code: "ENOENT" },                            message: "It is not the root of Vue project" },
     ])("prints the message and exits with 1 for: $label", ({ err, message }) => {

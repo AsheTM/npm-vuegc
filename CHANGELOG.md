@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `--path <folder>` writes the component in a folder inside `src/` (created if missing), e.g. `--path components/ui`; `..` and absolute paths are rejected. Library: `vuegc({ path })` ([#65](https://github.com/AsheTM/npm-vuegc/issues/65)).
 - `vuegc` can be used as a library: `require("vuegc").vuegc({ name, style, scoped, cwd })` generates a component and returns its path; `errorHandler` is exported too. Requiring `vuegc` no longer runs the CLI ([#55](https://github.com/AsheTM/npm-vuegc/issues/55)).
 
 ### Changed
