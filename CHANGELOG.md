@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `String.prototype.toCapitalize` replaced by a plain function: `vuegc` no longer modifies a built-in type ([#55](https://github.com/AsheTM/npm-vuegc/issues/55)).
 - Tests moved from `node:test` to [Vitest](https://vitest.dev), with new library tests for `vuegc()` and `errorHandler()`; `npm run test:watch` re-runs them on every change ([#63](https://github.com/AsheTM/npm-vuegc/issues/63)).
 
+### Fixed
+- README showed an outdated generated component (`Helloworld`, invalid `data()` / `methods()`): rewritten with install, flags table, real generated output (default and `--blank`), library usage and versions ([#71](https://github.com/AsheTM/npm-vuegc/issues/71)).
+
 ## [1.2.1] - 2026-10-25
 
 ### Added
