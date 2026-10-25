@@ -28,6 +28,9 @@ describe("generated component format", () => {
         { label: "--style sass",            options: { style: "sass" } },
         { label: "--scoped false",          options: { scoped: false } },
         { label: "--blank",                 options: { blank: true } },
+        { label: "--options",               options: { optionsApi: true } },
+        { label: "--options --props",       options: { optionsApi: true, props: ["title", "items"] } },
+        { label: "--props (setup)",         options: { props: ["title", "items"] } },
     ])("matches the snapshot: $label", ({ options }) => {
         const file = vuegc({ name: "HelloWorld", cwd: project, ...options });
 
@@ -35,7 +38,7 @@ describe("generated component format", () => {
     });
 
     // Rules that must hold for every variant, independently of the snapshots
-    it.each([{}, { style: "css" }, { style: "sass" }, { style: "less" }, { style: "stylus" }, { blank: true }])("is clean: %o", (options) => {
+    it.each([{}, { style: "css" }, { style: "sass" }, { style: "less" }, { style: "stylus" }, { blank: true }, { optionsApi: true }, { props: ["title"] }])("is clean: %o", (options) => {
         const content = fs.readFileSync(vuegc({ name: "HelloWorld", cwd: project, ...options }), "utf-8");
 
         expect(content).not.toContain("\r");            // LF only (#75)

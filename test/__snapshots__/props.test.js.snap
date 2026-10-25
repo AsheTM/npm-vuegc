@@ -5,19 +5,12 @@ exports[`vuegc({ props }) > matches the snapshot 1`] = `
     <div></div>
 </template>
 
-<script>
-export default {
-    name: "Card",
-    props: {
-        title: null,
-        items: null,
-        isActive: null
-    },
-    data() {
-        return { };
-    },
-    methods: { }
-}
+<script setup>
+const props = defineProps({
+    title: null,
+    items: null,
+    isActive: null
+});
 </script>
 
 <style lang="css" scoped>

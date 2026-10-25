@@ -18,8 +18,8 @@ describe("vuegc --name", () => {
         expect(readComponent(project, "Hello.vue")).not.toBeNull();
     });
 
-    it("uses the name for the component name and the root id", () => {
-        runVuegc(project, ["--name", "Hello"]);
+    it("uses the name for the root id (and the component name with --options)", () => {
+        runVuegc(project, ["--name", "Hello", "--options"]);
         const component = readComponent(project, "Hello.vue");
 
         expect(component).toMatch(/name: "Hello"/);
@@ -27,7 +27,7 @@ describe("vuegc --name", () => {
     });
 
     it("keeps the case of the name (#15)", () => {
-        runVuegc(project, ["--name", "HelloWorld"]);
+        runVuegc(project, ["--name", "HelloWorld", "--options"]);
 
         expect(readComponent(project, "HelloWorld.vue")).toMatch(/name: "HelloWorld"/);
     });
@@ -35,23 +35,45 @@ describe("vuegc --name", () => {
     it("capitalizes the first letter of the component name", () => {
         runVuegc(project, ["--name", "helloWorld"]);
 
-        expect(readComponent(project, "helloWorld.vue")).toMatch(/name: "HelloWorld"/);
+        expect(readComponent(project, "helloWorld.vue")).toMatch(/<div id="HelloWorld">/);
     });
 
     it("accepts a name ending with .vue without repeating it (#16)", () => {
-        runVuegc(project, ["--name", "Hello.vue"]);
+        runVuegc(project, ["--name", "Hello.vue", "--options"]);
         const component = readComponent(project, "Hello.vue");
 
         expect(component).toMatch(/name: "Hello"/);
         expect(component).not.toMatch(/Hello\.vue/);
     });
+});
 
-    it("generates a valid Vue 2 script: data() returns an object, methods is an object (#17)", () => {
+describe("vuegc script", () => {
+    let project;
+
+    beforeEach(() => { project = createVueProject(); });
+    afterEach(() => { removeFolder(project); });
+
+    it("uses <script setup> by default, without a name (Vue 3 takes it from the file name)", () => {
         runVuegc(project, ["--name", "Hello"]);
         const component = readComponent(project, "Hello.vue");
 
+        expect(component).toContain("<script setup>\n</script>");
+        expect(component).not.toMatch(/export default|name: /);
+    });
+
+    it("--options: Options API, data() returns an object, methods is an object (#17)", () => {
+        runVuegc(project, ["--name", "Hello", "--options"]);
+        const component = readComponent(project, "Hello.vue");
+
+        expect(component).toMatch(/<script>\nexport default \{\n {4}name: "Hello",/);
         expect(component).toMatch(/data\(\) \{\s*return \{ \};\s*\}/);
         expect(component).toMatch(/methods: \{ \}/);
+    });
+
+    it("--options false keeps <script setup>", () => {
+        runVuegc(project, ["--name", "Hello", "--options", "false"]);
+
+        expect(readComponent(project, "Hello.vue")).toContain("<script setup>");
     });
 });
 

@@ -25,8 +25,14 @@ describe("vuegc --blank", () => {
         expect(component).not.toMatch(/font-size/);
     });
 
-    it("keeps the script skeleton", () => {
+    it("keeps an empty <script setup>", () => {
         runVuegc(project, ["--name", "Hello", "--blank"]);
+
+        expect(readComponent(project, "Hello.vue")).toContain("<script setup>\n</script>");
+    });
+
+    it("keeps the script skeleton with --options", () => {
+        runVuegc(project, ["--name", "Hello", "--blank", "--options"]);
         const component = readComponent(project, "Hello.vue");
 
         expect(component).toMatch(/name: "Hello"/);

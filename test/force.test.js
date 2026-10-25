@@ -26,7 +26,7 @@ describe("vuegc --force", () => {
 
         expect(status).toBe(0);
         expect(stdout).toMatch(/Existing component overwritten/);
-        expect(readComponent(project, "Hello.vue")).toMatch(/name: "Hello"/);
+        expect(readComponent(project, "Hello.vue")).toMatch(/id="Hello"/);
     });
 
     it.each([
@@ -71,7 +71,7 @@ describe("vuegc({ force })", () => {
 
         vuegc({ name: "Hello", force: true, cwd: project });
 
-        expect(readComponent(project, "Hello.vue")).toMatch(/name: "Hello"/);
+        expect(readComponent(project, "Hello.vue")).toMatch(/id="Hello"/);
         expect(console.log).toHaveBeenCalledWith("\t[!] Existing component overwritten [!]");
     });
 });

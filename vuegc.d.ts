@@ -31,6 +31,8 @@ export interface VuegcOptions {
     props?: string[];
     /** CSS modules: `<style module>` and `:class="$style.root"`, instead of `scoped`. @default false */
     cssModule?: boolean;
+    /** Options API (`export default { … }`) instead of `<script setup>`. CLI: `--options`. @default false */
+    optionsApi?: boolean;
     /** Root of the Vue project (the folder that contains `src/`). @default process.cwd() */
     cwd?: string;
 }

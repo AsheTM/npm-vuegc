@@ -18,7 +18,7 @@ describe("vuegc --dry-run", () => {
 
         expect(status).toBe(0);
         expect(stdout).toMatch(/Dry run, nothing written: src\/Hello\.vue/);
-        expect(stdout).toMatch(/name: "Hello"/);
+        expect(stdout).toMatch(/id="Hello"/);
         expect(readComponent(project, "Hello.vue")).toBeNull();
     });
 
@@ -86,6 +86,6 @@ describe("vuegc({ dryRun })", () => {
 
         expect(result).toBe(path.join(project, "src", "components", "Hello.vue"));
         expect(fs.existsSync(result)).toBe(false);
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('name: "Hello"'));
+        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('id="Hello"'));
     });
 });

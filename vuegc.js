@@ -124,10 +124,10 @@ function _checkRequiredArgs(requiredArgs) {
 /**
  *  @description    Prepare HandleBars for appending Template, Style and Script html content
  */
-function registerHelpers(name, style, blank, props, cssModule) {
+function registerHelpers({ name, style, blank, props, cssModule, optionsApi }) {
     const componentFileName = toCapitalize(name.replace(/\.vue$/, ""));
     _registerHelperTemplate(componentFileName, blank, cssModule);
-    _registerHelperScript(componentFileName, props);
+    _registerHelperScript(componentFileName, props, optionsApi);
     _registerHelperStyle(componentFileName, style, blank, cssModule);
 }
 function _registerHelperTemplate(componentFileName, blank, cssModule) {
@@ -140,9 +140,17 @@ function _registerHelperTemplate(componentFileName, blank, cssModule) {
         return new Handlebars.SafeString(result);
     });
 }
-function _registerHelperScript(componentFileName, props) {
+function _registerHelperScript(componentFileName, props, optionsApi) {
     Handlebars.registerHelper("defaultScript", function(text, url) {
-        // null: any type in Vue 2, the user sets the real types
+        // null: any type (Vue 2 and 3), the user sets the real types
+        // <script setup> (default): only what's declared; the component name comes from the file name
+        if(!optionsApi) {
+            const result = props.length
+                ? `const props = defineProps({\n${ props.map(prop => `    ${ prop }: null`).join(",\n") }\n});`
+                : "";
+            return new Handlebars.SafeString(result);
+        }
+        // Options API (--options): same as vuegc 1.x
         const propsBlock = props.length
             ? `{\n${ props.map(prop => `        ${ prop }: null`).join(",\n") }\n    }`
             : "{ }";
@@ -273,6 +281,7 @@ if(require.main === module) {
             noStyle:    _isOn(getValueof(args, "--no-style", Boolean)),
             props:      getValueof(args, "--props", String),
             cssModule:  _isOn(getValueof(args, "--module", Boolean)),
+            optionsApi: _isOn(getValueof(args, "--options", Boolean)),
             style:      {
                 scoped: getValueof(args, "--scoped", Boolean) !== "false",
                 style:  getValueof(args, "--style", String)   || "css",
@@ -299,7 +308,8 @@ if(require.main === module) {
                 noScript:   optionalArgs.noScript,
                 noStyle:    optionalArgs.noStyle,
                 props:      optionalArgs.props === null ? undefined : _parseList(optionalArgs.props),
-                cssModule:  optionalArgs.cssModule
+                cssModule:  optionalArgs.cssModule,
+                optionsApi: optionalArgs.optionsApi
             });
         }
     } catch(err) {
@@ -311,7 +321,7 @@ if(require.main === module) {
  *  @description    Generate a Vue component in <cwd>/src/<path>/ (dryRun: print it, write nothing)
  *  @returns        Path of the generated component
  */
-function vuegc({ name, style = "css", scoped = true, path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, props = [], cssModule = false, cwd = process.cwd() } = {}) {
+function vuegc({ name, style = "css", scoped = true, path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, props = [], cssModule = false, optionsApi = false, cwd = process.cwd() } = {}) {
     // Checking the required name
     if(typeof name !== "string" || !name)
         throw { errno: 0x0003, flag: "name", exit: true };
@@ -350,11 +360,13 @@ function vuegc({ name, style = "css", scoped = true, path: folder = "", blank = 
             style:  style,
             // <style> attribute: CSS modules replace scoped
             scoped: cssModule ? ' module' : (scoped ? ' scoped' : ''),
+            // <script> attribute: <script setup> unless the Options API is asked
+            script: optionsApi ? '' : ' setup',
             sections: { template: !noTemplate, script: !noScript, style: !noStyle }
         };
 
     // Preparing template/script/style
-    registerHelpers(name, style, blank, props, cssModule);
+    registerHelpers({ name, style, blank, props, cssModule, optionsApi });
 
     // Start to generating vue component
     console.log("> Generating vue component starting");
@@ -365,9 +377,8 @@ function vuegc({ name, style = "css", scoped = true, path: folder = "", blank = 
     // LF line endings whatever the OS the template was installed on
     // (a left-out first section leaves an empty first line)
     let component = compileTemplate(dataTemplate).replace(/\r\n/g, "\n").replace(/^\n+/, "");
-    // An empty style section shouldn't keep an empty line
-    if(blank)
-        component = component.replace(/\n[ \t]*\n<\/style>/, "\n</style>");
+    // An empty <script setup> or style section shouldn't keep an empty line
+    component = component.replace(/\n[ \t]*\n<\/(script|style)>/g, "\n</$1>");
     const exists = fs.existsSync(pathComponent);
 
     // Dry run: same checks as a real run, but print instead of writing
