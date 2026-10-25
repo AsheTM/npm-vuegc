@@ -21,10 +21,10 @@ describe("vuegc errors", () => {
     });
 
     it("rejects an unsupported style and writes nothing (#14)", () => {
-        const { status, stdout } = runVuegc(project, ["--name", "Hello", "--style", "less"]);
+        const { status, stdout } = runVuegc(project, ["--name", "Hello", "--style", "tailwind"]);
 
         expect(status).toBe(1);
-        expect(stdout).toMatch(/Style less not supported, use one of: css, scss, stylus/);
+        expect(stdout).toMatch(/Style tailwind not supported, use one of: css, scss, sass, less, stylus/);
         expect(readComponent(project, "Hello.vue")).toBeNull();
     });
 
