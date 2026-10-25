@@ -1,26 +1,41 @@
 {
   "name": "vuegc",
-  "version": "1.1.0",
-  "description": "",
+  "version": "1.2.0",
+  "description": "CLI to generate a Vue 2 single-file component in your project src/ folder",
   "main": "vuegc.js",
+  "files": [
+    "vuegc.js",
+    "services/",
+    "template/",
+    "CHANGELOG.md"
+  ],
   "keywords": [
     "vue",
+    "generate",
     "component",
     "cli"
   ],
   "bin": {
     "vuegc": "vuegc.js"
   },
-  "author": "AsheTM",
+  "author": "@ashetm",
+  "contributors": [
+    "DAWOUD Haitham"
+  ],
   "license": "MIT",
   "repository": {
-    "url": "https://github.com/AsheTM/vuegc.git"
+    "type": "git",
+    "url": "git+https://github.com/AsheTM/npm-vuegc.git"
   },
-  "readme": "https://github.com/AsheTM/vuegc",
+  "homepage": "https://github.com/AsheTM/npm-vuegc#readme",
+  "bugs": {
+    "url": "https://github.com/AsheTM/npm-vuegc/issues"
+  },
   "dependencies": {
-    "fs": "0.0.1-security",
-    "handlebars": "^4.2.0",
-    "optimist": "^0.6.1",
-    "path": "^0.12.7"
+    "handlebars": "^4.7.10"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "jest": "^24.9.0"
   }
 }
