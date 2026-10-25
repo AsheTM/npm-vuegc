@@ -9,6 +9,9 @@
     "template/",
     "CHANGELOG.md"
   ],
+  "scripts": {
+    "test": "node --test test/help.test.js test/generate.test.js test/errors.test.js"
+  },
   "keywords": [
     "vue",
     "generate",

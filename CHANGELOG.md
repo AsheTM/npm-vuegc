@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Automated tests of the CLI with Node's built-in test runner (`node:test`), run with `npm test` ([#57](https://github.com/AsheTM/npm-vuegc/issues/57)).
+
 ## [1.2.0] - 2026-10-24
 
 ### Added

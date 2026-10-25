@@ -43,3 +43,12 @@ export default {
 ```
 
 For help section, tap `vuegc`
+
+### Development
+
+``` sh
+npm install
+npm test
+```
+
+Tests use Node's built-in test runner (`node:test`, Node 18+): each test creates a temporary Vue project, runs `vuegc` in it, and checks the output, the exit code and the generated file.
