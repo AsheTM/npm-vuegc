@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - `String.prototype.toCapitalize` replaced by a plain function: `vuegc` no longer modifies a built-in type ([#55](https://github.com/AsheTM/npm-vuegc/issues/55)).
 
+## [1.2.1] - 2026-10-25
+
+### Added
+- Automated tests of the CLI with Node's built-in test runner (`node:test`), run with `npm test` ([#57](https://github.com/AsheTM/npm-vuegc/issues/57)).
+
+### Removed
+- Unused `jest` and `chai` dev dependencies ([#58](https://github.com/AsheTM/npm-vuegc/issues/58)).
+
+### Security
+- Removing `jest@24` drops the 68 vulnerabilities `npm audit` reported in the development dependencies: `npm audit` now reports 0.
+
 ## [1.2.0] - 2026-10-24
 
 ### Added
@@ -79,7 +90,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--scoped` option for the `<style>` tag.
 - `--path` option for the output folder inside `src/` (default `./component/`).
 
-[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.0...develop
+[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.1...develop
+[1.2.1]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/AsheTM/npm-vuegc/compare/29064af...v1.2.0
 [1.1.0]: https://github.com/AsheTM/npm-vuegc/compare/05d2aae...29064af
 [1.0.2]: https://github.com/AsheTM/npm-vuegc/compare/eddae3e...05d2aae
