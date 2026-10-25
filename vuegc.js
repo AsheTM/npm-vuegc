@@ -47,8 +47,12 @@ function errorHandler(err) {
             console.log("\t[!] It is not the root of Vue project [!]");
             exit = true;
             break;
-        case 0x0001: 
-            console.log("\t[!] main.js of Vue Project not found [!]");
+        case 0x0001:
+            console.log(`\t[!] src/${ err.entry || "main.js" } doesn't create a Vue 3 app (createApp) [!]`);
+            exit = true;
+            break;
+        case 0x000A:
+            console.log("\t[!] This is a Vue 2 project: vuegc 2 generates Vue 3 components, use vuegc 1 (npm install -g vuegc@1) [!]");
             exit = true;
             break;
         case 0x0002: 
@@ -211,14 +215,40 @@ function _isInside(base, folder) {
 ////////////////////////////////////////////////
 
 
+/////////////Checking the Vue project/////////////
+////////////////////////////////////////////////
+/**
+ *  @description    Check src/ belongs to a Vue 3 project: an entry creating the app (createApp),
+ *                  and App.vue. A Vue 2 project (new Vue) is refused: it's the job of vuegc 1.
+ */
+function _checkVueProject(pathSrc) {
+    const entry = project.entries.find(file => fs.existsSync(path.join(pathSrc, file)));
+    // No entry: not the root of a Vue project
+    if(!entry)
+        throw { code: "ENOENT", exit: true };
+    const main = fs.readFileSync(path.join(pathSrc, entry), { encoding: 'utf-8' });
+    const app = fs.readFileSync(path.join(pathSrc, project.app), { encoding: 'utf-8' });
+
+    if(/\bnew Vue\s*\(/.test(main))
+        throw { errno: 0x000A, exit: true };
+    if(!/\bcreate(SSR)?App\s*\(/.test(main))
+        throw { errno: 0x0001, entry: entry, exit: true };
+    if(!/(template)|(script)|(style)/i.test(app))
+        throw { errno: 0x0002, exit: true };
+}
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+
+
 ////////////////////////////////////////
 /////////////////Start//////////////////
 ////////////////////////////////////////
 // Main Constants
 const
-    fileName            = {
-        "main.js": "main.js",
-        "App.vue": "App.vue"
+    // Files of a Vue 3 project, inside src/: the entry (Vite + TypeScript uses main.ts) and the root component
+    project             = {
+        entries:    ["main.js", "main.ts"],
+        app:        "App.vue"
     },
     supported           = {
         style:  ["css", "scss", "sass", "less", "stylus"]
@@ -314,10 +344,6 @@ function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank =
     const
         componentName       = name.endsWith(".vue") ? name : (name + ".vue"),
         pathComponent       = path.join(pathSrc, folder, componentName),
-        rootVueProject      = {
-            "main.js":  path.join(cwd, './src/', fileName['main.js']),
-            "App.vue":  path.join(cwd, './src/', fileName['App.vue'])
-        },
         sourceTemplate      = fs.readFileSync(path.join(__dirname, "./template/Template.vue.sample"), { encoding: 'utf-8' }),
         compileTemplate     = Handlebars.compile(sourceTemplate),
         dataTemplate        = {
@@ -333,15 +359,8 @@ function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank =
     // Start to generating vue component
     console.log("> Generating vue component starting");
 
-    // Checking if I'm in the root of Vue project
-    let content = {
-        "main.js": fs.readFileSync(rootVueProject["main.js"], { encoding: 'utf-8' }), 
-        "App.vue": fs.readFileSync(rootVueProject["App.vue"], { encoding: 'utf-8' })
-    };
-    if(!content[fileName["main.js"]].match(/(new Vue)|(from 'vue')|Vue\./gi)) 
-        throw { errno: 0x0001, exit: true };
-    if(!content[fileName["App.vue"]].match(/(template)|(script)|(style)/gi)) 
-        throw { errno: 0x0002, exit: true };
+    // Checking I'm at the root of a Vue 3 project
+    _checkVueProject(pathSrc);
 
     // LF line endings whatever the OS the template was installed on
     // (a left-out first section leaves an empty first line)
