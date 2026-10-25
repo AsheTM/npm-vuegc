@@ -36,9 +36,5 @@
   },
   "dependencies": {
     "handlebars": "^4.7.10"
-  },
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "jest": "^24.9.0"
   }
 }
