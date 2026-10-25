@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Unused `fs`, `path` and `optimist` dependencies: `handlebars` is the only runtime dependency ([#22](https://github.com/AsheTM/npm-vuegc/issues/22)).
+- Unfinished `viu` command and service templates, moved to their own package [`@ashetm/vueg`](https://github.com/AsheTM/npm-vueg) ([#52](https://github.com/AsheTM/npm-vuegc/issues/52)).
 
 ### Security
 - Bump `handlebars` from `^4.2.0` to `^4.7.10` to fix critical vulnerabilities (prototype pollution, JavaScript injection).
