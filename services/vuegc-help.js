@@ -7,7 +7,7 @@ __     ___   _ _____ ____  ____
   \\ V / | |_| | |__| |_| | |___
    \\_/   \\___/|_____\\____|\\____|
 
-vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style]
+vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items]
 
 Required flag(s):
 --name:     Name of the component
@@ -21,6 +21,7 @@ Optional flag(s):
 --dry-run:  Print the component instead of writing it [Default: false]
 --no-template, --no-script, --no-style:
             Leave the section out (at least one must remain) [Default: false]
+--props:    Comma-separated prop names, declared with an open type [Default: none]
 `);
     process.exit(0);
 }
