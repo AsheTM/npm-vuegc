@@ -71,6 +71,16 @@ function errorHandler(err) {
             console.log("\t[!] A component needs at least one section: don't use --no-template, --no-script and --no-style together [!]");
             exit = true;
             break;
+        case 0x0007:
+            console.log(err.prop
+                ? `\t[!] Prop "${ err.prop }" must be a valid JavaScript name, e.g. --props title,userName [!]`
+                : "\t[!] --props needs a list of names, e.g. --props title,userName [!]");
+            exit = true;
+            break;
+        case 0x0008:
+            console.log("\t[!] --props needs the script section: remove --no-script [!]");
+            exit = true;
+            break;
         default: 
             console.error(err);
             exit = true;
@@ -106,10 +116,10 @@ function _checkRequiredArgs(requiredArgs) {
 /**
  *  @description    Prepare HandleBars for appending Template, Style and Script html content
  */
-function registerHelpers(name, style, blank) {
+function registerHelpers(name, style, blank, props) {
     const componentFileName = toCapitalize(name.replace(/\.vue$/, ""));
     _registerHelperTemplate(componentFileName, blank);
-    _registerHelperScript(componentFileName);
+    _registerHelperScript(componentFileName, props);
     _registerHelperStyle(componentFileName, style, blank);
 }
 function _registerHelperTemplate(componentFileName, blank) {
@@ -120,11 +130,15 @@ function _registerHelperTemplate(componentFileName, blank) {
         return new Handlebars.SafeString(result);
     });
 }
-function _registerHelperScript(componentFileName) {
+function _registerHelperScript(componentFileName, props) {
     Handlebars.registerHelper("defaultScript", function(text, url) {
+        // null: any type in Vue 2, the user sets the real types
+        const propsBlock = props.length
+            ? `{\n${ props.map(prop => `        ${ prop }: null`).join(",\n") }\n    }`
+            : "{ }";
         let result = `export default {
     name: "${ componentFileName }",
-    props: { },
+    props: ${ propsBlock },
     data() {
         return { };
     },
@@ -156,6 +170,12 @@ function _registerHelperStyle(componentFileName, style, blank) {
 ////////////////////////////////////////////////
 function toCapitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
+}
+// "title, items,title" -> ["title", "items"]; anything but a non-empty string is invalid
+function _parseList(value) {
+    if(typeof value !== "string")
+        return [""];
+    return [...new Set(value.split(",").map(item => item.trim()).filter(item => item))];
 }
 // A boolean flag is on when present, unless its value is "false"
 function _isOn(value) {
@@ -202,6 +222,7 @@ if(require.main === module) {
             noTemplate: _isOn(getValueof(args, "--no-template", Boolean)),
             noScript:   _isOn(getValueof(args, "--no-script", Boolean)),
             noStyle:    _isOn(getValueof(args, "--no-style", Boolean)),
+            props:      getValueof(args, "--props", String),
             style:      {
                 scoped: getValueof(args, "--scoped", Boolean) !== "false",
                 style:  getValueof(args, "--style", String)   || "scss",
@@ -226,7 +247,8 @@ if(require.main === module) {
                 dryRun: optionalArgs.dryRun,
                 noTemplate: optionalArgs.noTemplate,
                 noScript:   optionalArgs.noScript,
-                noStyle:    optionalArgs.noStyle
+                noStyle:    optionalArgs.noStyle,
+                props:      optionalArgs.props === null ? undefined : _parseList(optionalArgs.props)
             });
         }
     } catch(err) {
@@ -238,7 +260,7 @@ if(require.main === module) {
  *  @description    Generate a Vue component in <cwd>/src/<path>/ (dryRun: print it, write nothing)
  *  @returns        Path of the generated component
  */
-function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, cwd = process.cwd() } = {}) {
+function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, props = [], cwd = process.cwd() } = {}) {
     // Checking the required name
     if(typeof name !== "string" || !name)
         throw { errno: 0x0003, flag: "name", exit: true };
@@ -250,6 +272,13 @@ function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank =
     // Checking at least one section remains
     if(noTemplate && noScript && noStyle)
         throw { errno: 0x0006, exit: true };
+
+    // Checking the props: JavaScript names, and a script section to declare them
+    const invalidProp = Array.isArray(props) ? props.find(prop => !/^[A-Za-z_$][\w$]*$/.test(prop)) : "";
+    if(invalidProp !== undefined)
+        throw { errno: 0x0007, prop: String(invalidProp), exit: true };
+    if(props.length && noScript)
+        throw { errno: 0x0008, exit: true };
 
     // Checking the output folder stays inside src/
     const pathSrc = path.join(cwd, "./src/");
@@ -273,7 +302,7 @@ function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank =
         };
 
     // Preparing template/script/style
-    registerHelpers(name, style, blank);
+    registerHelpers(name, style, blank, props);
 
     // Start to generating vue component
     console.log("> Generating vue component starting");

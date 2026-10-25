@@ -1,0 +1,26 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`vuegc({ props }) > matches the snapshot 1`] = `
+"<template>
+    <div></div>
+</template>
+
+<script>
+export default {
+    name: "Card",
+    props: {
+        title: null,
+        items: null,
+        isActive: null
+    },
+    data() {
+        return { };
+    },
+    methods: { }
+}
+</script>
+
+<style lang="scss" scoped>
+</style>
+"
+`;
