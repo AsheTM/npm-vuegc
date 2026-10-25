@@ -1,6 +1,6 @@
 {
   "name": "vuegc",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "CLI to generate a Vue 2 single-file component in your project src/ folder",
   "main": "vuegc.js",
   "files": [
@@ -9,6 +9,9 @@
     "template/",
     "CHANGELOG.md"
   ],
+  "scripts": {
+    "test": "node --test test/help.test.js test/generate.test.js test/errors.test.js"
+  },
   "keywords": [
     "vue",
     "generate",
@@ -33,9 +36,5 @@
   },
   "dependencies": {
     "handlebars": "^4.7.10"
-  },
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "jest": "^24.9.0"
   }
 }
