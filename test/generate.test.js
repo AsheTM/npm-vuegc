@@ -1,7 +1,8 @@
-const
-    { describe, it, beforeEach, afterEach } = require("node:test"),
-    assert                                  = require("node:assert/strict"),
-    { createVueProject, removeFolder, runVuegc, readComponent } = require("./support/vue-project");
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { createVueProject, removeFolder, runVuegc, readComponent } = require("./support/vue-project.js");
 
 describe("vuegc --name", () => {
     let project;
@@ -12,45 +13,45 @@ describe("vuegc --name", () => {
     it("generates src/<Name>.vue and exits with 0", () => {
         const { status, stdout } = runVuegc(project, ["--name", "Hello"]);
 
-        assert.equal(status, 0);
-        assert.match(stdout, /Generating vue component success/);
-        assert.notEqual(readComponent(project, "Hello.vue"), null);
+        expect(status).toBe(0);
+        expect(stdout).toMatch(/Generating vue component success/);
+        expect(readComponent(project, "Hello.vue")).not.toBeNull();
     });
 
     it("uses the name for the component name and the root id", () => {
         runVuegc(project, ["--name", "Hello"]);
         const component = readComponent(project, "Hello.vue");
 
-        assert.match(component, /name: "Hello"/);
-        assert.match(component, /<div id="Hello">/);
+        expect(component).toMatch(/name: "Hello"/);
+        expect(component).toMatch(/<div id="Hello">/);
     });
 
     it("keeps the case of the name (#15)", () => {
         runVuegc(project, ["--name", "HelloWorld"]);
 
-        assert.match(readComponent(project, "HelloWorld.vue"), /name: "HelloWorld"/);
+        expect(readComponent(project, "HelloWorld.vue")).toMatch(/name: "HelloWorld"/);
     });
 
     it("capitalizes the first letter of the component name", () => {
         runVuegc(project, ["--name", "helloWorld"]);
 
-        assert.match(readComponent(project, "helloWorld.vue"), /name: "HelloWorld"/);
+        expect(readComponent(project, "helloWorld.vue")).toMatch(/name: "HelloWorld"/);
     });
 
     it("accepts a name ending with .vue without repeating it (#16)", () => {
         runVuegc(project, ["--name", "Hello.vue"]);
         const component = readComponent(project, "Hello.vue");
 
-        assert.match(component, /name: "Hello"/);
-        assert.doesNotMatch(component, /Hello\.vue/);
+        expect(component).toMatch(/name: "Hello"/);
+        expect(component).not.toMatch(/Hello\.vue/);
     });
 
     it("generates a valid Vue 2 script: data() returns an object, methods is an object (#17)", () => {
         runVuegc(project, ["--name", "Hello"]);
         const component = readComponent(project, "Hello.vue");
 
-        assert.match(component, /data\(\) \{\s*return \{ \};\s*\}/);
-        assert.match(component, /methods: \{ \}/);
+        expect(component).toMatch(/data\(\) \{\s*return \{ \};\s*\}/);
+        expect(component).toMatch(/methods: \{ \}/);
     });
 });
 
@@ -63,17 +64,15 @@ describe("vuegc --style", () => {
     it("uses scss by default", () => {
         runVuegc(project, ["--name", "Hello"]);
 
-        assert.match(readComponent(project, "Hello.vue"), /<style lang="scss"/);
+        expect(readComponent(project, "Hello.vue")).toMatch(/<style lang="scss"/);
     });
 
-    for (const style of ["css", "scss", "stylus"]) {
-        it(`supports --style ${ style }`, () => {
-            const { status } = runVuegc(project, ["--name", "Hello", "--style", style]);
+    it.each(["css", "scss", "stylus"])("supports --style %s", (style) => {
+        const { status } = runVuegc(project, ["--name", "Hello", "--style", style]);
 
-            assert.equal(status, 0);
-            assert.match(readComponent(project, "Hello.vue"), new RegExp(`<style lang="${ style }"`));
-        });
-    }
+        expect(status).toBe(0);
+        expect(readComponent(project, "Hello.vue")).toContain(`<style lang="${ style }"`);
+    });
 });
 
 describe("vuegc --scoped", () => {
@@ -82,19 +81,14 @@ describe("vuegc --scoped", () => {
     beforeEach(() => { project = createVueProject(); });
     afterEach(() => { removeFolder(project); });
 
-    // [arguments, expected <style> tag]
-    const cases = [
-        [[],                            '<style lang="scss" scoped>'],
-        [["--scoped"],                  '<style lang="scss" scoped>'],  // flag as last argument (#8)
-        [["--scoped", "true"],          '<style lang="scss" scoped>'],
-        [["--scoped", "false"],         '<style lang="scss">'],         // (#12)
-    ];
+    it.each([
+        { label: "(default)",       args: [],                   expected: '<style lang="scss" scoped>' },
+        { label: "--scoped",        args: ["--scoped"],         expected: '<style lang="scss" scoped>' },  // flag as last argument (#8)
+        { label: "--scoped true",   args: ["--scoped", "true"], expected: '<style lang="scss" scoped>' },
+        { label: "--scoped false",  args: ["--scoped", "false"],expected: '<style lang="scss">' },         // (#12)
+    ])("$label -> $expected", ({ args, expected }) => {
+        runVuegc(project, ["--name", "Hello", ...args]);
 
-    for (const [args, expected] of cases) {
-        it(`${ args.join(" ") || "(default)" } -> ${ expected }`, () => {
-            runVuegc(project, ["--name", "Hello", ...args]);
-
-            assert.ok(readComponent(project, "Hello.vue").includes(expected));
-        });
-    }
+        expect(readComponent(project, "Hello.vue")).toContain(expected);
+    });
 });

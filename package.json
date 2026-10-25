@@ -10,7 +10,8 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "test": "node --test test/help.test.js test/generate.test.js test/errors.test.js"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [
     "vue",
@@ -36,5 +37,8 @@
   },
   "dependencies": {
     "handlebars": "^4.7.10"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.5"
   }
 }
