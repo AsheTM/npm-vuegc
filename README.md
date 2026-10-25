@@ -105,7 +105,18 @@ const { vuegc } = require("vuegc");
 vuegc({ name: "HelloWorld", style: "css", scoped: true, path: "components", blank: false, force: false, cwd: process.cwd() });
 ```
 
+Every CLI flag has an option: `style`, `scoped`, `path`, `blank`, `force`, `dryRun`, `noTemplate`, `noScript`, `noStyle`, `props` (array), `cssModule`, plus `cwd`.
+
 On failure, `vuegc()` throws instead of exiting; `errorHandler(err)` prints the same message as the CLI and exits.
+
+**TypeScript**: types are included (`vuegc.d.ts`), nothing to install:
+
+``` ts
+import { vuegc, type VuegcOptions } from "vuegc";
+
+const options: VuegcOptions = { name: "Card", style: "less", props: ["title"] };
+const file: string = vuegc(options);
+```
 
 ## Versions
 
@@ -128,6 +139,8 @@ Tests use [Vitest](https://vitest.dev) (Node 22.12+ or 24 for development):
 
 - CLI tests create a temporary Vue project, run `vuegc` in it, and check the output, the exit code and the generated file.
 - Library tests call `vuegc()` and `errorHandler()` directly, with mocks for `console.log` and `process.exit`.
+- Snapshot tests lock the generated output (`npx vitest run -u` to update them on purpose).
+- Type tests (`test/*.test-d.ts`) check `vuegc.d.ts` with TypeScript, so the types can't drift from the code.
 
 ## License
 
