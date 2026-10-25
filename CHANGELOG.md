@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `vuegc` can be used as a library: `require("vuegc").vuegc({ name, style, scoped, cwd })` generates a component and returns its path; `errorHandler` is exported too. Requiring `vuegc` no longer runs the CLI ([#55](https://github.com/AsheTM/npm-vuegc/issues/55)).
+
+### Changed
+- `String.prototype.toCapitalize` replaced by a plain function: `vuegc` no longer modifies a built-in type ([#55](https://github.com/AsheTM/npm-vuegc/issues/55)).
+
 ## [1.2.0] - 2026-10-24
 
 ### Added

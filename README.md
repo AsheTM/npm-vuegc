@@ -43,3 +43,14 @@ export default {
 ```
 
 For help section, tap `vuegc`
+
+### Use as a library
+
+``` js
+const { vuegc } = require("vuegc");
+
+// Generates <cwd>/src/HelloWorld.vue and returns its path
+vuegc({ name: "HelloWorld", style: "css", scoped: true, cwd: process.cwd() });
+```
+
+On failure, `vuegc()` throws instead of exiting; `errorHandler(err)` prints the same message as the CLI and exits.
