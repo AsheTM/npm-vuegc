@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `--module` generates CSS modules instead of a scoped style: `<style module>`, a `.root` class used through `:class="$style.root"` (plain CSS rules prefixed by `.root` to stay local); `--no-style` is rejected. Library: `vuegc({ cssModule: true })` ([#91](https://github.com/AsheTM/npm-vuegc/issues/91)).
 - `--style less` and `--style sass` (indented syntax: no braces, no semicolons) are supported ([#89](https://github.com/AsheTM/npm-vuegc/issues/89)).
 - `--props title,items` declares the props (`title: null`, any type in Vue 2); names must be valid JavaScript names, duplicates are removed, and `--no-script` is rejected. Library: `vuegc({ props: ["title", "items"] })` ([#83](https://github.com/AsheTM/npm-vuegc/issues/83)).
 - `--no-template`, `--no-script` and `--no-style` leave a section out; at least one must remain. Library: `vuegc({ noTemplate, noScript, noStyle })` ([#81](https://github.com/AsheTM/npm-vuegc/issues/81)).
