@@ -1,0 +1,13 @@
+{
+    // Only used to type-check vuegc.d.ts and the type tests (vitest --typecheck): vuegc itself is plain JavaScript
+    "compilerOptions": {
+        "strict": true,
+        "noEmit": true,
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "target": "es2022",
+        "skipLibCheck": true,
+        "types": []
+    },
+    "include": ["vuegc.d.ts", "test/**/*.test-d.ts"]
+}
