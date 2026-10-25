@@ -1,9 +1,10 @@
-const
-    { describe, it, beforeEach, afterEach } = require("node:test"),
-    assert                                  = require("node:assert/strict"),
-    fs                                      = require("node:fs"),
-    path                                    = require("node:path"),
-    { createVueProject, createEmptyFolder, removeFolder, runVuegc, readComponent } = require("./support/vue-project");
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { createRequire } from "node:module";
+import fs from "node:fs";
+import path from "node:path";
+
+const require = createRequire(import.meta.url);
+const { createVueProject, createEmptyFolder, removeFolder, runVuegc, readComponent } = require("./support/vue-project.js");
 
 describe("vuegc errors", () => {
     let project;
@@ -14,17 +15,17 @@ describe("vuegc errors", () => {
     it("fails with exit code 1 when --name is missing (#20)", () => {
         const { status, stdout } = runVuegc(project, ["--style", "css"]);
 
-        assert.equal(status, 1);
-        assert.match(stdout, /Flag name required/);
-        assert.match(stdout, /Generating vue component failure/);
+        expect(status).toBe(1);
+        expect(stdout).toMatch(/Flag name required/);
+        expect(stdout).toMatch(/Generating vue component failure/);
     });
 
     it("rejects an unsupported style and writes nothing (#14)", () => {
         const { status, stdout } = runVuegc(project, ["--name", "Hello", "--style", "less"]);
 
-        assert.equal(status, 1);
-        assert.match(stdout, /Style less not supported, use one of: css, scss, stylus/);
-        assert.equal(readComponent(project, "Hello.vue"), null);
+        expect(status).toBe(1);
+        expect(stdout).toMatch(/Style less not supported, use one of: css, scss, stylus/);
+        expect(readComponent(project, "Hello.vue")).toBeNull();
     });
 
     it("never overwrites an existing component (#19)", () => {
@@ -33,9 +34,9 @@ describe("vuegc errors", () => {
 
         const { status, stdout } = runVuegc(project, ["--name", "Hello"]);
 
-        assert.equal(status, 1);
-        assert.match(stdout, /Component already exists/);
-        assert.equal(fs.readFileSync(file, "utf-8"), "my own work");
+        expect(status).toBe(1);
+        expect(stdout).toMatch(/Component already exists/);
+        expect(fs.readFileSync(file, "utf-8")).toBe("my own work");
     });
 });
 
@@ -48,7 +49,7 @@ describe("vuegc outside a Vue project", () => {
     it("explains it's not the root of a Vue project (#18)", () => {
         const { status, stdout } = runVuegc(folder, ["--name", "Hello"]);
 
-        assert.equal(status, 1);
-        assert.match(stdout, /It is not the root of Vue project/);
+        expect(status).toBe(1);
+        expect(stdout).toMatch(/It is not the root of Vue project/);
     });
 });

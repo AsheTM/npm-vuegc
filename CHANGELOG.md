@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-25
+
+### Added
+- `--force` overwrites an existing component on purpose and says so; without it, the "Component already exists" message now suggests `--force`. Library: `vuegc({ force: true })` ([#69](https://github.com/AsheTM/npm-vuegc/issues/69)).
+- `--blank` generates an empty `<div></div>` template and an empty `<style>`, without the demo content; the script skeleton is kept. Library: `vuegc({ blank: true })` ([#67](https://github.com/AsheTM/npm-vuegc/issues/67)).
+- `--path <folder>` writes the component in a folder inside `src/` (created if missing), e.g. `--path components/ui`; `..` and absolute paths are rejected. Library: `vuegc({ path })` ([#65](https://github.com/AsheTM/npm-vuegc/issues/65)).
+- `vuegc` can be used as a library: `require("vuegc").vuegc({ name, style, scoped, cwd })` generates a component and returns its path; `errorHandler` is exported too. Requiring `vuegc` no longer runs the CLI ([#55](https://github.com/AsheTM/npm-vuegc/issues/55)).
+
+### Changed
+- `String.prototype.toCapitalize` replaced by a plain function: `vuegc` no longer modifies a built-in type ([#55](https://github.com/AsheTM/npm-vuegc/issues/55)).
+- Tests moved from `node:test` to [Vitest](https://vitest.dev), with new library tests for `vuegc()` and `errorHandler()`; `npm run test:watch` re-runs them on every change ([#63](https://github.com/AsheTM/npm-vuegc/issues/63)).
+
+### Fixed
+- README showed an outdated generated component (`Helloworld`, invalid `data()` / `methods()`): rewritten with install, flags table, real generated output (default and `--blank`), library usage and versions ([#71](https://github.com/AsheTM/npm-vuegc/issues/71)).
+
 ## [1.2.1] - 2026-10-25
 
 ### Added
@@ -84,7 +99,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--scoped` option for the `<style>` tag.
 - `--path` option for the output folder inside `src/` (default `./component/`).
 
-[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.1...develop
+[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/v1.3.0...develop
+[1.3.0]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/AsheTM/npm-vuegc/compare/29064af...v1.2.0
 [1.1.0]: https://github.com/AsheTM/npm-vuegc/compare/05d2aae...29064af
