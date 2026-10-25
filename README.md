@@ -2,7 +2,7 @@
 
 CLI command to generate a Vue component for VueJS MVC (not instance) in /src/ folder
 
-`vuegc --name HelloWord.vue [--scoped [true|false]] [--style css] [--path components] [--blank]`
+`vuegc --name HelloWord.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force]`
 
 Required flag(s):
 
@@ -17,6 +17,8 @@ Optional flag(s):
 * --path:   Folder inside src/ for the component, created if missing [Default: src/]
 
 * --blank:  Empty template and style, without the demo content [Default: false]
+
+* --force:  Overwrite the component if it already exists [Default: false]
 
 It generates component file .vue like this: 
 

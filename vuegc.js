@@ -40,7 +40,7 @@ function errorHandler(err) {
     // System errors have a portable code, ours only an errno
     switch(err.code || err.errno) {
         case "EEXIST":
-            console.log("\t[!] Component already exists [!]");
+            console.log("\t[!] Component already exists, use --force to overwrite it [!]");
             exit = true;
             break;
         case "ENOENT":
@@ -197,6 +197,7 @@ if(require.main === module) {
         optionalArgs        = {
             path:       getValueof(args, "--path", String),
             blank:      _isOn(getValueof(args, "--blank", Boolean)),
+            force:      _isOn(getValueof(args, "--force", Boolean)),
             template:   {
                 //
             },
@@ -224,7 +225,8 @@ if(require.main === module) {
                     style:  optionalArgs.style.style,
                     scoped: optionalArgs.style.scoped,
                     path:   optionalArgs.path === null ? undefined : optionalArgs.path,
-                    blank:  optionalArgs.blank
+                    blank:  optionalArgs.blank,
+                    force:  optionalArgs.force
                 });
                 break;
             case serviceArgs.view:
@@ -240,7 +242,7 @@ if(require.main === module) {
  *  @description    Generate a Vue component in <cwd>/src/<path>/
  *  @returns        Path of the generated component
  */
-function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank = false, cwd = process.cwd() } = {}) {
+function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank = false, force = false, cwd = process.cwd() } = {}) {
     // Checking the required name
     if(typeof name !== "string" || !name)
         throw { errno: 0x0003, flag: "name", exit: true };
@@ -288,12 +290,15 @@ function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank =
     // Creating the output folder if missing
     fs.mkdirSync(path.dirname(pathComponent), { recursive: true });
 
-    // Creating the component, without overwriting an existing one
+    // Creating the component, without overwriting an existing one unless forced
     let component = compileTemplate(dataTemplate);
     // An empty style section shouldn't keep a whitespace-only line
     if(blank)
         component = component.replace(/(\r?\n)[ \t]*\r?\n<\/style>/, "$1</style>");
-    fs.writeFileSync(pathComponent, component, { flag: "wx" });
+    const exists = fs.existsSync(pathComponent);
+    fs.writeFileSync(pathComponent, component, { flag: force ? "w" : "wx" });
+    if(exists)
+        console.log("\t[!] Existing component overwritten [!]");
 
     // Generation vue component done
     console.log("> Generating vue component success");
