@@ -17,7 +17,7 @@ describe("vuegc --module", () => {
         const component = readComponent(project, "Card.vue");
 
         expect(status).toBe(0);
-        expect(component).toContain('<style lang="scss" module>');
+        expect(component).toContain('<style lang="css" module>');
         expect(component).toContain('<div :class="$style.root">');
         expect(component).toMatch(/^\.root \{/m);
         expect(component).not.toMatch(/id="Card"|#Card/);
@@ -45,7 +45,7 @@ describe("vuegc --module", () => {
         const component = readComponent(project, "Card.vue");
 
         expect(component).toContain("<div></div>");
-        expect(component).toMatch(/<style lang="scss" module>\n<\/style>/);
+        expect(component).toMatch(/<style lang="css" module>\n<\/style>/);
     });
 
     it("fails with --no-style: nothing would define $style", () => {
@@ -59,7 +59,7 @@ describe("vuegc --module", () => {
     it("--module false keeps scoped", () => {
         runVuegc(project, ["--name", "Card", "--module", "false"]);
 
-        expect(readComponent(project, "Card.vue")).toContain('<style lang="scss" scoped>');
+        expect(readComponent(project, "Card.vue")).toContain('<style lang="css" scoped>');
     });
 });
 

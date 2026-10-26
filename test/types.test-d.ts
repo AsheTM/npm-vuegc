@@ -22,7 +22,10 @@ describe("vuegc.d.ts", () => {
             noScript: false,
             noStyle: false,
             props: ["title", "items"],
+            emits: ["update:modelValue", "close"],
             cssModule: true,
+            optionsApi: true,
+            ts: true,
             cwd: "/project",
         });
     });

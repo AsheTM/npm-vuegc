@@ -5,7 +5,7 @@
 {{/if}}
 {{#if sections.script}}
 
-<script>
+<script{{{script}}}>
 {{defaultScript}}
 </script>
 {{/if}}

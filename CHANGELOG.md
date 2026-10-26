@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-10-25
+
+**Vue 3.** Breaking changes: Vue 3 projects only, `css` and `<script setup>` by default. For Vue 2, use vuegc 1 (`npm install -g vuegc@1`); in a Vue 3 project, `--options --style scss` gives the 1.x output.
+
+### Added
+- `--ts` generates a TypeScript component: `<script setup lang="ts">` with type-based `defineProps<{ title?: unknown }>()` and `defineEmits<{ "update:modelValue": [...args: unknown[]] }>()`, or `defineComponent()` with `--options`. Library: `vuegc({ ts: true })` ([#104](https://github.com/AsheTM/npm-vuegc/issues/104)).
+- `--emits update,close` declares the component events: `const emit = defineEmits([...])` in `<script setup>`, `emits: [...]` with `--options`; names like `update:modelValue` accepted, duplicates removed, `--no-script` rejected. Library: `vuegc({ emits: [...] })` ([#102](https://github.com/AsheTM/npm-vuegc/issues/102)).
+
+### Changed
+- **BREAKING**: `vuegc` 2 targets **Vue 3** projects: `src/main.js` or `src/main.ts` creating the app with `createApp` / `createSSRApp`, and `src/App.vue`. A Vue 2 project (`new Vue`) is refused with a pointer to `vuegc@1`, which keeps generating Vue 2 components (`1.x` branch) ([#96](https://github.com/AsheTM/npm-vuegc/issues/96)).
+- **BREAKING**: the default style is `css` (was `scss`), which works without installing `sass`; `--style scss` gives the 1.x output ([#98](https://github.com/AsheTM/npm-vuegc/issues/98)).
+- **BREAKING**: the script is `<script setup>` (Composition API): empty, or `const props = defineProps({ … })` with `--props`; the component name comes from the file name. `--options` (library: `optionsApi: true`) gives the Options API, same as 1.x ([#100](https://github.com/AsheTM/npm-vuegc/issues/100)).
+- README and package description for Vue 3: versions table, examples from the real output, and **Migrating from 1.x** (`--options --style scss` in a Vue 3 project produces exactly the vuegc 1.4 output) ([#106](https://github.com/AsheTM/npm-vuegc/issues/106)).
+
 ## [1.4.0] - 2026-10-25
 
 ### Added
@@ -120,7 +134,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--scoped` option for the `<style>` tag.
 - `--path` option for the output folder inside `src/` (default `./component/`).
 
-[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/v1.4.0...develop
+[Unreleased]: https://github.com/AsheTM/npm-vuegc/compare/v2.0.0...develop
+[2.0.0]: https://github.com/AsheTM/npm-vuegc/compare/v1.4.0...v2.0.0
 [1.4.0]: https://github.com/AsheTM/npm-vuegc/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/AsheTM/npm-vuegc/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/AsheTM/npm-vuegc/compare/v1.2.1...v1.3.0

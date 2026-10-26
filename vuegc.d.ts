@@ -9,7 +9,7 @@ export type VuegcStyle = "css" | "scss" | "sass" | "less" | "stylus";
 export interface VuegcOptions {
     /** Component name, with or without `.vue`. The first letter is capitalized for the component name. */
     name: string;
-    /** CSS pre-processor of the `<style>` section. @default "scss" */
+    /** CSS pre-processor of the `<style>` section. @default "css" */
     style?: VuegcStyle;
     /** `scoped` attribute on `<style>`. Ignored with `cssModule`. @default true */
     scoped?: boolean;
@@ -30,7 +30,13 @@ export interface VuegcOptions {
     /** Prop names, declared as `name: null` (any type). Must be valid JavaScript names. @default [] */
     props?: string[];
     /** CSS modules: `<style module>` and `:class="$style.root"`, instead of `scoped`. @default false */
+    /** Event names, e.g. `update:modelValue`: `defineEmits([...])`, or `emits: [...]` with `optionsApi`. @default [] */
+    emits?: string[];
     cssModule?: boolean;
+    /** Options API (`export default { … }`) instead of `<script setup>`. CLI: `--options`. @default false */
+    optionsApi?: boolean;
+    /** TypeScript (`lang="ts"`): typed `defineProps` / `defineEmits`, `defineComponent()` with `optionsApi`. CLI: `--ts`. @default false */
+    ts?: boolean;
     /** Root of the Vue project (the folder that contains `src/`). @default process.cwd() */
     cwd?: string;
 }
@@ -40,7 +46,7 @@ export interface VuegcOptions {
  *
  * | errno    | meaning                                         |
  * |----------|-------------------------------------------------|
- * | `0x0001` | `src/main.js` isn't a Vue project entry          |
+ * | `0x0001` | `src/main.js` / `main.ts` doesn't create a Vue 3 app (`entry`) |
  * | `0x0002` | `src/App.vue` isn't a Vue component              |
  * | `0x0003` | missing or invalid `name` (`flag: "name"`)       |
  * | `0x0004` | unsupported `style`                              |
@@ -49,6 +55,9 @@ export interface VuegcOptions {
  * | `0x0007` | invalid prop name (`prop`)                       |
  * | `0x0008` | `props` with `noScript`                          |
  * | `0x0009` | `cssModule` with `noStyle`                       |
+ * | `0x000A` | Vue 2 project: use vuegc 1                       |
+ * | `0x000B` | invalid event name (`event`)                     |
+ * | `0x000C` | `emits` with `noScript`                          |
  *
  * `code`: `"EEXIST"` (component already exists, without `force`), `"ENOENT"` (not the root of a Vue project).
  */
@@ -60,6 +69,8 @@ export interface VuegcError {
     style?: string;
     path?: string;
     prop?: string;
+    event?: string;
+    entry?: string;
 }
 
 /**

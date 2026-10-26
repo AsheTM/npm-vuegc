@@ -47,8 +47,22 @@ function errorHandler(err) {
             console.log("\t[!] It is not the root of Vue project [!]");
             exit = true;
             break;
-        case 0x0001: 
-            console.log("\t[!] main.js of Vue Project not found [!]");
+        case 0x0001:
+            console.log(`\t[!] src/${ err.entry || "main.js" } doesn't create a Vue 3 app (createApp) [!]`);
+            exit = true;
+            break;
+        case 0x000B:
+            console.log(err.event
+                ? `	[!] Event "${ err.event }" must be a valid event name, e.g. --emits update,update:modelValue [!]`
+                : "	[!] --emits needs a list of event names, e.g. --emits update,close [!]");
+            exit = true;
+            break;
+        case 0x000C:
+            console.log("	[!] --emits needs the script section: remove --no-script [!]");
+            exit = true;
+            break;
+        case 0x000A:
+            console.log("\t[!] This is a Vue 2 project: vuegc 2 generates Vue 3 components, use vuegc 1 (npm install -g vuegc@1) [!]");
             exit = true;
             break;
         case 0x0002: 
@@ -120,10 +134,10 @@ function _checkRequiredArgs(requiredArgs) {
 /**
  *  @description    Prepare HandleBars for appending Template, Style and Script html content
  */
-function registerHelpers(name, style, blank, props, cssModule) {
+function registerHelpers({ name, style, blank, props, emits, cssModule, optionsApi, ts }) {
     const componentFileName = toCapitalize(name.replace(/\.vue$/, ""));
     _registerHelperTemplate(componentFileName, blank, cssModule);
-    _registerHelperScript(componentFileName, props);
+    _registerHelperScript(componentFileName, props, emits, optionsApi, ts);
     _registerHelperStyle(componentFileName, style, blank, cssModule);
 }
 function _registerHelperTemplate(componentFileName, blank, cssModule) {
@@ -136,20 +150,40 @@ function _registerHelperTemplate(componentFileName, blank, cssModule) {
         return new Handlebars.SafeString(result);
     });
 }
-function _registerHelperScript(componentFileName, props) {
+function _registerHelperScript(componentFileName, props, emits, optionsApi, ts) {
     Handlebars.registerHelper("defaultScript", function(text, url) {
-        // null: any type in Vue 2, the user sets the real types
+        // null (unknown in TypeScript): any type, the user sets the real types
+        const emitsList = `[${ emits.map(event => `"${ event }"`).join(", ") }]`;
+        // <script setup> (default): only what's declared; the component name comes from the file name
+        if(!optionsApi) {
+            const lines = [];
+            // TypeScript: type-based declarations; event names like update:modelValue are quoted keys
+            const key = (name) => /^[A-Za-z_$][\w$]*$/.test(name) ? name : `"${ name }"`;
+            if(props.length)
+                lines.push(ts
+                    ? `const props = defineProps<{\n${ props.map(prop => `    ${ prop }?: unknown;`).join("\n") }\n}>();`
+                    : `const props = defineProps({\n${ props.map(prop => `    ${ prop }: null`).join(",\n") }\n});`);
+            if(emits.length)
+                lines.push(ts
+                    ? `const emit = defineEmits<{\n${ emits.map(event => `    ${ key(event) }: [...args: unknown[]];`).join("\n") }\n}>();`
+                    : `const emit = defineEmits(${ emitsList });`);
+            return new Handlebars.SafeString(lines.join("\n"));
+        }
+        // Options API (--options): same as vuegc 1.x, plus the emits; defineComponent() for TypeScript
         const propsBlock = props.length
             ? `{\n${ props.map(prop => `        ${ prop }: null`).join(",\n") }\n    }`
             : "{ }";
-        let result = `export default {
+        const body = `{
     name: "${ componentFileName }",
-    props: ${ propsBlock },
+    props: ${ propsBlock },${ emits.length ? `\n    emits: ${ emitsList },` : "" }
     data() {
         return { };
     },
     methods: { }
 }`;
+        let result = ts
+            ? `import { defineComponent } from "vue";\n\nexport default defineComponent(${ body });`
+            : `export default ${ body }`;
         return new Handlebars.SafeString(result);
     });
 }
@@ -211,14 +245,40 @@ function _isInside(base, folder) {
 ////////////////////////////////////////////////
 
 
+/////////////Checking the Vue project/////////////
+////////////////////////////////////////////////
+/**
+ *  @description    Check src/ belongs to a Vue 3 project: an entry creating the app (createApp),
+ *                  and App.vue. A Vue 2 project (new Vue) is refused: it's the job of vuegc 1.
+ */
+function _checkVueProject(pathSrc) {
+    const entry = project.entries.find(file => fs.existsSync(path.join(pathSrc, file)));
+    // No entry: not the root of a Vue project
+    if(!entry)
+        throw { code: "ENOENT", exit: true };
+    const main = fs.readFileSync(path.join(pathSrc, entry), { encoding: 'utf-8' });
+    const app = fs.readFileSync(path.join(pathSrc, project.app), { encoding: 'utf-8' });
+
+    if(/\bnew Vue\s*\(/.test(main))
+        throw { errno: 0x000A, exit: true };
+    if(!/\bcreate(SSR)?App\s*\(/.test(main))
+        throw { errno: 0x0001, entry: entry, exit: true };
+    if(!/(template)|(script)|(style)/i.test(app))
+        throw { errno: 0x0002, exit: true };
+}
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+
+
 ////////////////////////////////////////
 /////////////////Start//////////////////
 ////////////////////////////////////////
 // Main Constants
 const
-    fileName            = {
-        "main.js": "main.js",
-        "App.vue": "App.vue"
+    // Files of a Vue 3 project, inside src/: the entry (Vite + TypeScript uses main.ts) and the root component
+    project             = {
+        entries:    ["main.js", "main.ts"],
+        app:        "App.vue"
     },
     supported           = {
         style:  ["css", "scss", "sass", "less", "stylus"]
@@ -243,9 +303,12 @@ if(require.main === module) {
             noStyle:    _isOn(getValueof(args, "--no-style", Boolean)),
             props:      getValueof(args, "--props", String),
             cssModule:  _isOn(getValueof(args, "--module", Boolean)),
+            optionsApi: _isOn(getValueof(args, "--options", Boolean)),
+            emits:      getValueof(args, "--emits", String),
+            ts:         _isOn(getValueof(args, "--ts", Boolean)),
             style:      {
                 scoped: getValueof(args, "--scoped", Boolean) !== "false",
-                style:  getValueof(args, "--style", String)   || "scss",
+                style:  getValueof(args, "--style", String)   || "css",
             }
         };
 
@@ -269,7 +332,10 @@ if(require.main === module) {
                 noScript:   optionalArgs.noScript,
                 noStyle:    optionalArgs.noStyle,
                 props:      optionalArgs.props === null ? undefined : _parseList(optionalArgs.props),
-                cssModule:  optionalArgs.cssModule
+                cssModule:  optionalArgs.cssModule,
+                optionsApi: optionalArgs.optionsApi,
+                emits:      optionalArgs.emits === null ? undefined : _parseList(optionalArgs.emits),
+                ts:         optionalArgs.ts
             });
         }
     } catch(err) {
@@ -281,7 +347,7 @@ if(require.main === module) {
  *  @description    Generate a Vue component in <cwd>/src/<path>/ (dryRun: print it, write nothing)
  *  @returns        Path of the generated component
  */
-function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, props = [], cssModule = false, cwd = process.cwd() } = {}) {
+function vuegc({ name, style = "css", scoped = true, path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, props = [], cssModule = false, optionsApi = false, emits = [], ts = false, cwd = process.cwd() } = {}) {
     // Checking the required name
     if(typeof name !== "string" || !name)
         throw { errno: 0x0003, flag: "name", exit: true };
@@ -301,6 +367,13 @@ function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank =
     if(props.length && noScript)
         throw { errno: 0x0008, exit: true };
 
+    // Checking the events: names like update or update:modelValue, and a script section to declare them
+    const invalidEvent = Array.isArray(emits) ? emits.find(event => !/^[A-Za-z][\w:-]*$/.test(event)) : "";
+    if(invalidEvent !== undefined)
+        throw { errno: 0x000B, event: String(invalidEvent), exit: true };
+    if(emits.length && noScript)
+        throw { errno: 0x000C, exit: true };
+
     // Checking CSS modules have a style section to define $style
     if(cssModule && noStyle)
         throw { errno: 0x0009, exit: true };
@@ -314,41 +387,31 @@ function vuegc({ name, style = "scss", scoped = true, path: folder = "", blank =
     const
         componentName       = name.endsWith(".vue") ? name : (name + ".vue"),
         pathComponent       = path.join(pathSrc, folder, componentName),
-        rootVueProject      = {
-            "main.js":  path.join(cwd, './src/', fileName['main.js']),
-            "App.vue":  path.join(cwd, './src/', fileName['App.vue'])
-        },
         sourceTemplate      = fs.readFileSync(path.join(__dirname, "./template/Template.vue.sample"), { encoding: 'utf-8' }),
         compileTemplate     = Handlebars.compile(sourceTemplate),
         dataTemplate        = {
             style:  style,
             // <style> attribute: CSS modules replace scoped
             scoped: cssModule ? ' module' : (scoped ? ' scoped' : ''),
+            // <script> attributes: <script setup> unless the Options API is asked, lang="ts" for TypeScript
+            script: (optionsApi ? '' : ' setup') + (ts ? ' lang="ts"' : ''),
             sections: { template: !noTemplate, script: !noScript, style: !noStyle }
         };
 
     // Preparing template/script/style
-    registerHelpers(name, style, blank, props, cssModule);
+    registerHelpers({ name, style, blank, props, emits, cssModule, optionsApi, ts });
 
     // Start to generating vue component
     console.log("> Generating vue component starting");
 
-    // Checking if I'm in the root of Vue project
-    let content = {
-        "main.js": fs.readFileSync(rootVueProject["main.js"], { encoding: 'utf-8' }), 
-        "App.vue": fs.readFileSync(rootVueProject["App.vue"], { encoding: 'utf-8' })
-    };
-    if(!content[fileName["main.js"]].match(/(new Vue)|(from 'vue')|Vue\./gi)) 
-        throw { errno: 0x0001, exit: true };
-    if(!content[fileName["App.vue"]].match(/(template)|(script)|(style)/gi)) 
-        throw { errno: 0x0002, exit: true };
+    // Checking I'm at the root of a Vue 3 project
+    _checkVueProject(pathSrc);
 
     // LF line endings whatever the OS the template was installed on
     // (a left-out first section leaves an empty first line)
     let component = compileTemplate(dataTemplate).replace(/\r\n/g, "\n").replace(/^\n+/, "");
-    // An empty style section shouldn't keep an empty line
-    if(blank)
-        component = component.replace(/\n[ \t]*\n<\/style>/, "\n</style>");
+    // An empty <script setup> or style section shouldn't keep an empty line
+    component = component.replace(/\n[ \t]*\n<\/(script|style)>/g, "\n</$1>");
     const exists = fs.existsSync(pathComponent);
 
     // Dry run: same checks as a real run, but print instead of writing

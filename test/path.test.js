@@ -19,7 +19,7 @@ describe("vuegc --path", () => {
         const { status } = runVuegc(project, ["--name", "Hello", "--path", "components"]);
 
         expect(status).toBe(0);
-        expect(readComponent(project, "components/Hello.vue")).toMatch(/name: "Hello"/);
+        expect(readComponent(project, "components/Hello.vue")).toMatch(/id="Hello"/);
         expect(readComponent(project, "Hello.vue")).toBeNull();
     });
 
@@ -27,7 +27,7 @@ describe("vuegc --path", () => {
         const { status } = runVuegc(project, ["--name", "Button", "--path", "components/ui"]);
 
         expect(status).toBe(0);
-        expect(readComponent(project, "components/ui/Button.vue")).toMatch(/name: "Button"/);
+        expect(readComponent(project, "components/ui/Button.vue")).toMatch(/id="Button"/);
     });
 
     it("still writes in src/ without --path", () => {
