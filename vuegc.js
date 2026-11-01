@@ -278,8 +278,45 @@ describe("${ title }", () => {
 });
 `;
 }
+// Storybook story of the component (Component Story Format 3): the props as args, a spy (fn) for each event
+function _storyContent({ importName, file, props, emits }, ts) {
+    // The listener of an event, as Vue's types name it: close -> onClose, item-click -> "onItem-click"
+    const handler = (event) => "on" + toCapitalize(event);
+    const key = (name) => /^[A-Za-z_$][\w$]*$/.test(name) ? name : `"${ name }"`;
+    const args = [
+        ...props.map(prop => `${ prop }: "${ prop }"`),
+        ...emits.map(event => `${ key(handler(event)) }: fn()`)
+    ];
+    const imports = [
+        ...(ts ? [`import type { Meta, StoryObj } from "@storybook/vue3-vite";`] : []),
+        ...(emits.length ? [`import { fn } from "storybook/test";`] : []),
+        `import ${ importName } from "./${ file }";`
+    ];
+    const story = args.length ? `{\n    args: {\n${ args.map(arg => `        ${ arg }`).join(",\n") }\n    }\n}` : "{ }";
+    // No title: Storybook names the story after the file's path
+    return ts
+        ? `${ imports.join("\n") }
+
+const meta = {
+    component: ${ importName }
+} satisfies Meta<typeof ${ importName }>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = ${ story };
+`
+        : `${ imports.join("\n") }
+
+export default {
+    component: ${ importName }
+};
+
+export const Default = ${ story };
+`;
+}
 // Print how to install the packages a generated file needs, when the project's package.json lacks one of them
-function _hintMissing(cwd, packages, message) {
+function _hintMissing(cwd, packages, message, install = (missing) => `npm install -D ${ missing.join(" ") }`) {
     let pkg;
     try {
         pkg = JSON.parse(fs.readFileSync(path.join(cwd, "package.json"), { encoding: 'utf-8' }));
@@ -290,7 +327,7 @@ function _hintMissing(cwd, packages, message) {
     const installed = { ...pkg.dependencies, ...pkg.devDependencies };
     const missing = packages.filter(name => !(name in installed));
     if(missing.length)
-        console.log(`\t[!] ${ message }: npm install -D ${ missing.join(" ") } [!]`);
+        console.log(`\t[!] ${ message }: ${ install(missing) } [!]`);
 }
 // A relative folder that stays inside the base folder (no "..", not absolute)
 function _isInside(base, folder) {
@@ -366,6 +403,7 @@ if(require.main === module) {
             emits:      getValueof(args, "--emits", String),
             ts:         _isOn(getValueof(args, "--ts", Boolean)),
             test:       _isOn(getValueof(args, "--test", Boolean)),
+            story:      _isOn(getValueof(args, "--story", Boolean)),
             template:  getValueof(args, "--template", String) || "html",
             style:      {
                 scoped: getValueof(args, "--scoped", Boolean) !== "false",
@@ -398,7 +436,8 @@ if(require.main === module) {
                 optionsApi: optionalArgs.optionsApi,
                 emits:      optionalArgs.emits === null ? undefined : _parseList(optionalArgs.emits),
                 ts:         optionalArgs.ts,
-                test:       optionalArgs.test
+                test:       optionalArgs.test,
+                story:      optionalArgs.story
             });
         }
     } catch(err) {
@@ -410,7 +449,7 @@ if(require.main === module) {
  *  @description    Generate a Vue component in <cwd>/src/<path>/ (dryRun: print it, write nothing)
  *  @returns        Path of the generated component
  */
-function vuegc({ name, style = "css", scoped = true, template = "html", path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, props = [], cssModule = false, optionsApi = false, emits = [], ts = false, test = false, cwd = process.cwd() } = {}) {
+function vuegc({ name, style = "css", scoped = true, template = "html", path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, props = [], cssModule = false, optionsApi = false, emits = [], ts = false, test = false, story = false, cwd = process.cwd() } = {}) {
     // Checking the required name
     if(typeof name !== "string" || !name)
         throw { errno: 0x0003, flag: "name", exit: true };
@@ -487,10 +526,10 @@ function vuegc({ name, style = "css", scoped = true, template = "html", path: fo
     let component = compileTemplate(dataTemplate).replace(/\r\n/g, "\n").replace(/^\n+/, "");
     // An empty <script setup> or style section shouldn't keep an empty line
     component = component.replace(/\n[ \t]*\n<\/(script|style)>/g, "\n</$1>");
-    // Files generated next to the component, named after it (--test: Card.spec.js, Card.spec.ts with --ts)
+    // Files generated next to the component, named after it (--test: Card.spec.js, --story: Card.stories.js; .ts with --ts)
     const
         baseName        = componentName.replace(/\.vue$/, ""),
-        componentInfo   = { importName: _identifier(baseName), file: componentName, title: toCapitalize(baseName), props },
+        componentInfo   = { importName: _identifier(baseName), file: componentName, title: toCapitalize(baseName), props, emits },
         extension       = ts ? "ts" : "js",
         companions      = [];
     if(test)
@@ -499,6 +538,12 @@ function vuegc({ name, style = "css", scoped = true, template = "html", path: fo
             file:       path.join(path.dirname(pathComponent), `${ baseName }.spec.${ extension }`),
             // The demo text is only there with a template, and without --blank
             content:    _testContent(componentInfo, !noTemplate && !blank)
+        });
+    if(story)
+        companions.push({
+            label:      "Story",
+            file:       path.join(path.dirname(pathComponent), `${ baseName }.stories.${ extension }`),
+            content:    _storyContent(componentInfo, ts)
         });
     const relative = (file) => path.relative(cwd, file).split(path.sep).join("/");
 
@@ -513,6 +558,8 @@ function vuegc({ name, style = "css", scoped = true, template = "html", path: fo
             _hintMissing(cwd, ["pug"], "Pug templates need the pug package");
         if(test)
             _hintMissing(cwd, ["vitest", "@vue/test-utils"], "Tests run with Vitest and Vue Test Utils");
+        if(story)
+            _hintMissing(cwd, ["storybook"], "Stories need Storybook, set it up with", () => "npm create storybook@latest");
     };
 
     // Dry run: same checks as a real run, but print instead of writing
