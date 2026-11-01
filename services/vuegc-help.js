@@ -20,7 +20,8 @@ Optional flag(s):
 --force:    Overwrite the component if it already exists [Default: false]
 --dry-run:  Print the component instead of writing it [Default: false]
 --no-template, --no-script, --no-style:
-            Leave the section out (at least one must remain) [Default: false]
+            Leave the section out (at least one must remain; without the template,
+            a script with --props, --emits or --options) [Default: false]
 --props:    Comma-separated prop names, declared with an open type [Default: none]
 --emits:    Comma-separated event names, e.g. update:modelValue [Default: none]
 --module:   CSS modules (<style module> + $style) instead of scoped [Default: false]

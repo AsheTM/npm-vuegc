@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - A project `.npmrc` pins the registry to registry.npmjs.org: installs, the lock file and `npm publish` no longer depend on the developer's own npm config (no token in it; npm never packs it) ([#109](https://github.com/AsheTM/npm-vuegc/issues/109)).
 
+### Fixed
+- `--no-template` no longer generates a component that doesn't compile (`At least one <template> or <script> is required in a single file component`): Vue drops an empty `<script setup>`, so nothing but the style was left. Without the template, the script needs something in it (`--props`, `--emits` or `--options`), and `--no-template --no-script` is refused; nothing is written. Library: errno `0x000F` ([#120](https://github.com/AsheTM/npm-vuegc/issues/120)).
+
 ## [2.0.0] - 2026-10-25
 
 **Vue 3.** Breaking changes: Vue 3 projects only, `css` and `<script setup>` by default. For Vue 2, use vuegc 1 (`npm install -g vuegc@1`); in a Vue 3 project, `--options --style scss` gives the 1.x output.

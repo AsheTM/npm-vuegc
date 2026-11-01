@@ -26,7 +26,7 @@ export interface VuegcOptions {
     force?: boolean;
     /** Print the component instead of writing it; same checks as a real run. @default false */
     dryRun?: boolean;
-    /** Leave the `<template>` section out. At least one section must remain. @default false */
+    /** Leave the `<template>` section out. The script must remain, with `props`, `emits` or `optionsApi`: Vue drops an empty `<script setup>`. @default false */
     noTemplate?: boolean;
     /** Leave the `<script>` section out. At least one section must remain. @default false */
     noScript?: boolean;
@@ -67,6 +67,7 @@ export interface VuegcOptions {
  * | `0x000C` | `emits` with `noScript`                          |
  * | `0x000D` | unsupported `template` (`template`)              |
  * | `0x000E` | `template: "pug"` with `noTemplate`              |
+ * | `0x000F` | `noTemplate` with `noScript` (`noScript: true`), or with an empty `<script setup>` |
  *
  * `code`: `"EEXIST"` (the component, or the file in `file`, already exists, without `force`), `"ENOENT"` (not the root of a Vue project).
  */
@@ -77,6 +78,7 @@ export interface VuegcError {
     flag?: string;
     style?: string;
     template?: string;
+    noScript?: boolean;
     path?: string;
     prop?: string;
     event?: string;
