@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - CI: GitHub Actions run `npm ci` and `npm test` on every pull request into `develop` or `master` and every push to `develop`, on Node 22 and 24, on Ubuntu and Windows ([#111](https://github.com/AsheTM/npm-vuegc/issues/111)).
+- Dependabot: a weekly pull request into `develop` for npm packages (development dependencies grouped) and for GitHub Actions ([#112](https://github.com/AsheTM/npm-vuegc/issues/112)).
 
 ### Changed
 - A project `.npmrc` pins the registry to registry.npmjs.org: installs, the lock file and `npm publish` no longer depend on the developer's own npm config (no token in it; npm never packs it) ([#109](https://github.com/AsheTM/npm-vuegc/issues/109)).
