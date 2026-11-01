@@ -1,7 +1,7 @@
 // Type tests: checked by TypeScript (vitest --typecheck), never executed.
 // They fail if vuegc.d.ts stops accepting valid calls or starts accepting invalid ones.
 import { describe, it, expectTypeOf } from "vitest";
-import { vuegc, errorHandler, type VuegcOptions, type VuegcError, type VuegcStyle } from "../vuegc.js";
+import { vuegc, errorHandler, type VuegcOptions, type VuegcError, type VuegcStyle, type VuegcTemplate } from "../vuegc.js";
 
 describe("vuegc.d.ts", () => {
     it("vuegc() takes the options and returns the path", () => {
@@ -14,6 +14,7 @@ describe("vuegc.d.ts", () => {
             name: "Card",
             style: "sass",
             scoped: false,
+            template: "pug",
             path: "components/ui",
             blank: true,
             force: true,
@@ -39,6 +40,8 @@ describe("vuegc.d.ts", () => {
     it("rejects invalid options", () => {
         // @ts-expect-error: unsupported pre-processor
         vuegc({ name: "Card", style: "tailwind" });
+        // @ts-expect-error: unsupported template language
+        vuegc({ name: "Card", template: "jade" });
         // @ts-expect-error: props is a list of names, not a string
         vuegc({ name: "Card", props: "title,items" });
         // @ts-expect-error: typo, the option is dryRun
@@ -49,6 +52,10 @@ describe("vuegc.d.ts", () => {
 
     it("lists the 5 supported styles", () => {
         expectTypeOf<VuegcStyle>().toEqualTypeOf<"css" | "scss" | "sass" | "less" | "stylus">();
+    });
+
+    it("lists the 2 supported template languages", () => {
+        expectTypeOf<VuegcTemplate>().toEqualTypeOf<"html" | "pug">();
     });
 
     it("errorHandler() takes a thrown error and never returns", () => {

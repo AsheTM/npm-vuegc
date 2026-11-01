@@ -6,6 +6,9 @@
 /** CSS pre-processors supported by `--style`. */
 export type VuegcStyle = "css" | "scss" | "sass" | "less" | "stylus";
 
+/** Template languages supported by `--template`. */
+export type VuegcTemplate = "html" | "pug";
+
 export interface VuegcOptions {
     /** Component name, with or without `.vue`. The first letter is capitalized for the component name. */
     name: string;
@@ -13,6 +16,8 @@ export interface VuegcOptions {
     style?: VuegcStyle;
     /** `scoped` attribute on `<style>`. Ignored with `cssModule`. @default true */
     scoped?: boolean;
+    /** Language of the `<template>` section: `"pug"` gives `<template lang="pug">`. Not with `noTemplate`. @default "html" */
+    template?: VuegcTemplate;
     /** Folder inside `src/`, created if missing. Must stay inside `src/`. @default "" (src/) */
     path?: string;
     /** Empty template and style, without the demo content. @default false */
@@ -29,9 +34,9 @@ export interface VuegcOptions {
     noStyle?: boolean;
     /** Prop names, declared as `name: null` (any type). Must be valid JavaScript names. @default [] */
     props?: string[];
-    /** CSS modules: `<style module>` and `:class="$style.root"`, instead of `scoped`. @default false */
     /** Event names, e.g. `update:modelValue`: `defineEmits([...])`, or `emits: [...]` with `optionsApi`. @default [] */
     emits?: string[];
+    /** CSS modules: `<style module>` and `:class="$style.root"`, instead of `scoped`. @default false */
     cssModule?: boolean;
     /** Options API (`export default { … }`) instead of `<script setup>`. CLI: `--options`. @default false */
     optionsApi?: boolean;
@@ -58,6 +63,8 @@ export interface VuegcOptions {
  * | `0x000A` | Vue 2 project: use vuegc 1                       |
  * | `0x000B` | invalid event name (`event`)                     |
  * | `0x000C` | `emits` with `noScript`                          |
+ * | `0x000D` | unsupported `template` (`template`)              |
+ * | `0x000E` | `template: "pug"` with `noTemplate`              |
  *
  * `code`: `"EEXIST"` (component already exists, without `force`), `"ENOENT"` (not the root of a Vue project).
  */
@@ -67,6 +74,7 @@ export interface VuegcError {
     exit?: boolean;
     flag?: string;
     style?: string;
+    template?: string;
     path?: string;
     prop?: string;
     event?: string;

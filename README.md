@@ -17,7 +17,7 @@ Or run it without installing: `npx vuegc --name HelloWorld`.
 Run it at the root of a Vue 3 project (the folder that contains `src/main.js` or `src/main.ts`, creating the app with `createApp`, and `src/App.vue`), e.g. a Vite or Vue CLI 5 project:
 
 ``` sh
-vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options] [--ts]
+vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options] [--ts] [--template pug]
 ```
 
 | Flag | Description | Default |
@@ -35,6 +35,7 @@ vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path compon
 | `--module` | CSS modules: `<style module>` and `:class="$style.root"` instead of `scoped` | `false` |
 | `--options` | Options API (`export default { name, props, data, methods }`) instead of `<script setup>` | `false` |
 | `--ts` | TypeScript: `lang="ts"`, typed `defineProps<{ … }>()` / `defineEmits<{ … }>()`, `defineComponent()` with `--options` | `false` |
+| `--template` | Template language: `html`, or `pug` (`<template lang="pug">`, needs the `pug` package) | `html` |
 | `--help`, `-h` | Show the help (also shown without any argument) | |
 
 Examples:
@@ -45,6 +46,7 @@ vuegc --name Button --path components/ui                # src/components/ui/Butt
 vuegc --name Card --props title,items --emits close     # props and events
 vuegc --name Card --ts --style scss --blank             # TypeScript, scss, empty
 vuegc --name Card --options                             # Options API
+vuegc --name Card --template pug                        # Pug template
 ```
 
 An existing component is never overwritten without `--force`. On failure, `vuegc` prints the reason and exits with code `1`.
@@ -120,7 +122,7 @@ const { vuegc } = require("vuegc");
 vuegc({ name: "HelloWorld", style: "css", scoped: true, path: "components", blank: false, force: false, cwd: process.cwd() });
 ```
 
-Every CLI flag has an option: `style`, `scoped`, `path`, `blank`, `force`, `dryRun`, `noTemplate`, `noScript`, `noStyle`, `props` and `emits` (arrays), `cssModule` (`--module`), `optionsApi` (`--options`), `ts`, plus `cwd`.
+Every CLI flag has an option: `style`, `scoped`, `template`, `path`, `blank`, `force`, `dryRun`, `noTemplate`, `noScript`, `noStyle`, `props` and `emits` (arrays), `cssModule` (`--module`), `optionsApi` (`--options`), `ts`, plus `cwd`.
 
 On failure, `vuegc()` throws instead of exiting; `errorHandler(err)` prints the same message as the CLI and exits.
 
