@@ -7,7 +7,7 @@ __     ___   _ _____ ____  ____
   \\ V / | |_| | |__| |_| | |___
    \\_/   \\___/|_____\\____|\\____|
 
-vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options] [--ts] [--template pug] [--test]
+vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options] [--ts] [--template pug] [--test] [--story]
 
 Required flag(s):
 --name:     Name of the component
@@ -29,6 +29,7 @@ Optional flag(s):
 --ts:       TypeScript (lang="ts"): typed props and events [Default: false]
 --template: Template language [Default: html] [Value supported: html, pug]
 --test:     Also write a Vitest test next to the component (Name.spec.js, .spec.ts with --ts) [Default: false]
+--story:    Also write a Storybook story next to the component (Name.stories.js, .stories.ts with --ts) [Default: false]
 `);
     process.exit(0);
 }

@@ -44,6 +44,8 @@ export interface VuegcOptions {
     ts?: boolean;
     /** Also write a Vitest test next to the component: `Name.spec.js` (`.spec.ts` with `ts`), mounting it with Vue Test Utils. @default false */
     test?: boolean;
+    /** Also write a Storybook story next to the component: `Name.stories.js` (`.stories.ts` with `ts`), the props as args and a spy for each event. @default false */
+    story?: boolean;
     /** Root of the Vue project (the folder that contains `src/`). @default process.cwd() */
     cwd?: string;
 }
@@ -83,7 +85,7 @@ export interface VuegcError {
     prop?: string;
     event?: string;
     entry?: string;
-    /** With `code: "EEXIST"`: the existing file that isn't the component, e.g. `"src/Card.spec.js"`. */
+    /** With `code: "EEXIST"`: the existing file that isn't the component, e.g. `"src/Card.spec.js"` or `"src/Card.stories.js"`. */
     file?: string;
 }
 
