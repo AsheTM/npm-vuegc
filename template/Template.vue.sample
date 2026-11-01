@@ -1,5 +1,5 @@
 {{#if sections.template}}
-<template>
+<template{{{template}}}>
     {{defaultTemplate}}
 </template>
 {{/if}}
