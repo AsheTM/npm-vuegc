@@ -29,7 +29,7 @@ vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path compon
 | `--blank` | Empty template and style, without the demo content | `false` |
 | `--force` | Overwrite the component if it already exists | `false` |
 | `--dry-run` | Print the component instead of writing it; same checks as a real run | `false` |
-| `--no-template`, `--no-script`, `--no-style` | Leave the section out (at least one must remain) | `false` |
+| `--no-template`, `--no-script`, `--no-style` | Leave the section out (at least one must remain). Without the template, the component needs a script with something in it: `--props`, `--emits` or `--options` | `false` |
 | `--props` | Comma-separated prop names, e.g. `title,items`, declared as `title: null` (any type) | none |
 | `--emits` | Comma-separated event names, e.g. `update:modelValue,close`: `defineEmits([...])` / `emits: [...]` | none |
 | `--module` | CSS modules: `<style module>` and `:class="$style.root"` instead of `scoped` | `false` |

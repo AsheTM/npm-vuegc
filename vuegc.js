@@ -75,6 +75,12 @@ function errorHandler(err) {
             console.log("\t[!] --template needs the template section: remove --no-template [!]");
             exit = true;
             break;
+        case 0x000F:
+            console.log(err.noScript
+                ? "\t[!] A component needs a template or a script: don't use --no-template with --no-script [!]"
+                : "\t[!] Without the template, the script needs content: add --props, --emits or --options, or keep the template [!]");
+            exit = true;
+            break;
         case 0x0002:
             console.log("\t[!] App.vue of Vue Project not found [!]");
             exit = true;
@@ -436,6 +442,10 @@ function vuegc({ name, style = "css", scoped = true, template = "html", path: fo
         throw { errno: 0x000B, event: String(invalidEvent), exit: true };
     if(emits.length && noScript)
         throw { errno: 0x000C, exit: true };
+
+    // Checking the component compiles without a template: it needs a script, and Vue drops an empty <script setup>
+    if(noTemplate && (noScript || (!optionsApi && !props.length && !emits.length)))
+        throw { errno: 0x000F, noScript: noScript, exit: true };
 
     // Checking CSS modules have a style section to define $style
     if(cssModule && noStyle)
