@@ -15,6 +15,7 @@ describe("vuegc.d.ts", () => {
             style: "sass",
             scoped: false,
             template: "pug",
+            test: true,
             path: "components/ui",
             blank: true,
             force: true,

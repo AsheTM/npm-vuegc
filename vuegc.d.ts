@@ -42,6 +42,8 @@ export interface VuegcOptions {
     optionsApi?: boolean;
     /** TypeScript (`lang="ts"`): typed `defineProps` / `defineEmits`, `defineComponent()` with `optionsApi`. CLI: `--ts`. @default false */
     ts?: boolean;
+    /** Also write a Vitest test next to the component: `Name.spec.js` (`.spec.ts` with `ts`), mounting it with Vue Test Utils. @default false */
+    test?: boolean;
     /** Root of the Vue project (the folder that contains `src/`). @default process.cwd() */
     cwd?: string;
 }
@@ -66,7 +68,7 @@ export interface VuegcOptions {
  * | `0x000D` | unsupported `template` (`template`)              |
  * | `0x000E` | `template: "pug"` with `noTemplate`              |
  *
- * `code`: `"EEXIST"` (component already exists, without `force`), `"ENOENT"` (not the root of a Vue project).
+ * `code`: `"EEXIST"` (the component, or the file in `file`, already exists, without `force`), `"ENOENT"` (not the root of a Vue project).
  */
 export interface VuegcError {
     errno?: number;
@@ -79,6 +81,8 @@ export interface VuegcError {
     prop?: string;
     event?: string;
     entry?: string;
+    /** With `code: "EEXIST"`: the existing file that isn't the component, e.g. `"src/Card.spec.js"`. */
+    file?: string;
 }
 
 /**

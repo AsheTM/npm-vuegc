@@ -40,7 +40,9 @@ function errorHandler(err) {
     // System errors have a portable code, ours only an errno
     switch(err.code || err.errno) {
         case "EEXIST":
-            console.log("\t[!] Component already exists, use --force to overwrite it [!]");
+            console.log(err.file
+                ? `\t[!] ${ err.file } already exists, use --force to overwrite it [!]`
+                : "\t[!] Component already exists, use --force to overwrite it [!]");
             exit = true;
             break;
         case "ENOENT":
@@ -249,6 +251,27 @@ function _parseList(value) {
 function _isOn(value) {
     return value !== null && value !== "false";
 }
+// A JavaScript name for importing the component: hello-world -> HelloWorld
+function _identifier(text) {
+    const identifier = text.split(/[^A-Za-z0-9_$]+/).filter(part => part).map(toCapitalize).join("");
+    return /^[0-9]/.test(identifier) ? "_" + identifier : identifier;
+}
+// Vitest test of the component, mounted with Vue Test Utils (with its props)
+function _testContent({ importName, file, title, props }, hasText) {
+    const options = props.length ? `, { props: { ${ props.map(prop => `${ prop }: "${ prop }"`).join(", ") } } }` : "";
+    return `import { describe, it, expect } from "vitest";
+import { mount } from "@vue/test-utils";
+import ${ importName } from "./${ file }";
+
+describe("${ title }", () => {
+    it("renders", () => {
+        const wrapper = mount(${ importName }${ options });
+
+        expect(wrapper.exists()).toBe(true);${ hasText ? `\n        expect(wrapper.text()).toContain("${ title }");` : "" }
+    });
+});
+`;
+}
 // Print how to install the packages a generated file needs, when the project's package.json lacks one of them
 function _hintMissing(cwd, packages, message) {
     let pkg;
@@ -336,7 +359,8 @@ if(require.main === module) {
             optionsApi: _isOn(getValueof(args, "--options", Boolean)),
             emits:      getValueof(args, "--emits", String),
             ts:         _isOn(getValueof(args, "--ts", Boolean)),
-            template:   getValueof(args, "--template", String) || "html",
+            test:       _isOn(getValueof(args, "--test", Boolean)),
+            template:  getValueof(args, "--template", String) || "html",
             style:      {
                 scoped: getValueof(args, "--scoped", Boolean) !== "false",
                 style:  getValueof(args, "--style", String)   || "css",
@@ -367,7 +391,8 @@ if(require.main === module) {
                 cssModule:  optionalArgs.cssModule,
                 optionsApi: optionalArgs.optionsApi,
                 emits:      optionalArgs.emits === null ? undefined : _parseList(optionalArgs.emits),
-                ts:         optionalArgs.ts
+                ts:         optionalArgs.ts,
+                test:       optionalArgs.test
             });
         }
     } catch(err) {
@@ -379,7 +404,7 @@ if(require.main === module) {
  *  @description    Generate a Vue component in <cwd>/src/<path>/ (dryRun: print it, write nothing)
  *  @returns        Path of the generated component
  */
-function vuegc({ name, style = "css", scoped = true, template = "html", path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, props = [], cssModule = false, optionsApi = false, emits = [], ts = false, cwd = process.cwd() } = {}) {
+function vuegc({ name, style = "css", scoped = true, template = "html", path: folder = "", blank = false, force = false, dryRun = false, noTemplate = false, noScript = false, noStyle = false, props = [], cssModule = false, optionsApi = false, emits = [], ts = false, test = false, cwd = process.cwd() } = {}) {
     // Checking the required name
     if(typeof name !== "string" || !name)
         throw { errno: 0x0003, flag: "name", exit: true };
@@ -452,19 +477,42 @@ function vuegc({ name, style = "css", scoped = true, template = "html", path: fo
     let component = compileTemplate(dataTemplate).replace(/\r\n/g, "\n").replace(/^\n+/, "");
     // An empty <script setup> or style section shouldn't keep an empty line
     component = component.replace(/\n[ \t]*\n<\/(script|style)>/g, "\n</$1>");
-    const exists = fs.existsSync(pathComponent);
+    // Files generated next to the component, named after it (--test: Card.spec.js, Card.spec.ts with --ts)
+    const
+        baseName        = componentName.replace(/\.vue$/, ""),
+        componentInfo   = { importName: _identifier(baseName), file: componentName, title: toCapitalize(baseName), props },
+        extension       = ts ? "ts" : "js",
+        companions      = [];
+    if(test)
+        companions.push({
+            label:      "Test",
+            file:       path.join(path.dirname(pathComponent), `${ baseName }.spec.${ extension }`),
+            // The demo text is only there with a template, and without --blank
+            content:    _testContent(componentInfo, !noTemplate && !blank)
+        });
+    const relative = (file) => path.relative(cwd, file).split(path.sep).join("/");
+
+    // Nothing is written if one of the files exists, unless forced
+    const existing = [pathComponent, ...companions.map(companion => companion.file)].filter(file => fs.existsSync(file));
+    if(existing.length && !force)
+        throw existing[0] == pathComponent ? { code: "EEXIST", exit: true } : { code: "EEXIST", file: relative(existing[0]), exit: true };
+
     // What the project needs to install for the generated code, once it's generated
     const hints = () => {
         if(template == "pug")
             _hintMissing(cwd, ["pug"], "Pug templates need the pug package");
+        if(test)
+            _hintMissing(cwd, ["vitest", "@vue/test-utils"], "Tests run with Vitest and Vue Test Utils");
     };
 
     // Dry run: same checks as a real run, but print instead of writing
     if(dryRun) {
-        if(exists && !force)
-            throw { code: "EEXIST", exit: true };
-        console.log(`> Dry run, nothing written: ${ path.relative(cwd, pathComponent).split(path.sep).join("/") }\n`);
+        console.log(`> Dry run, nothing written: ${ relative(pathComponent) }\n`);
         console.log(component);
+        for(const companion of companions) {
+            console.log(`> Dry run, nothing written: ${ relative(companion.file) }\n`);
+            console.log(companion.content);
+        }
         hints();
         console.log("> Generating vue component success");
         return pathComponent;
@@ -475,8 +523,14 @@ function vuegc({ name, style = "css", scoped = true, template = "html", path: fo
 
     // Creating the component, without overwriting an existing one unless forced
     fs.writeFileSync(pathComponent, component, { flag: force ? "w" : "wx" });
-    if(exists)
+    if(existing.includes(pathComponent))
         console.log("\t[!] Existing component overwritten [!]");
+    for(const companion of companions) {
+        fs.writeFileSync(companion.file, companion.content, { flag: force ? "w" : "wx" });
+        console.log(`> ${ companion.label } written: ${ relative(companion.file) }`);
+        if(existing.includes(companion.file))
+            console.log(`\t[!] Existing ${ relative(companion.file) } overwritten [!]`);
+    }
     hints();
 
     // Generation vue component done
