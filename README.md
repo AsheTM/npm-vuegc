@@ -17,7 +17,7 @@ Or run it without installing: `npx vuegc --name HelloWorld`.
 Run it at the root of a Vue 3 project (the folder that contains `src/main.js` or `src/main.ts`, creating the app with `createApp`, and `src/App.vue`), e.g. a Vite or Vue CLI 5 project:
 
 ``` sh
-vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options] [--ts] [--template pug]
+vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options] [--ts] [--template pug] [--test]
 ```
 
 | Flag | Description | Default |
@@ -36,6 +36,7 @@ vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path compon
 | `--options` | Options API (`export default { name, props, data, methods }`) instead of `<script setup>` | `false` |
 | `--ts` | TypeScript: `lang="ts"`, typed `defineProps<{ … }>()` / `defineEmits<{ … }>()`, `defineComponent()` with `--options` | `false` |
 | `--template` | Template language: `html`, or `pug` (`<template lang="pug">`, needs the `pug` package) | `html` |
+| `--test` | Also write a Vitest test next to the component: `Name.spec.js` (`.spec.ts` with `--ts`) | `false` |
 | `--help`, `-h` | Show the help (also shown without any argument) | |
 
 Examples:
@@ -47,9 +48,10 @@ vuegc --name Card --props title,items --emits close     # props and events
 vuegc --name Card --ts --style scss --blank             # TypeScript, scss, empty
 vuegc --name Card --options                             # Options API
 vuegc --name Card --template pug                        # Pug template
+vuegc --name Card --path components --test              # and src/components/Card.spec.js
 ```
 
-An existing component is never overwritten without `--force`. On failure, `vuegc` prints the reason and exits with code `1`.
+An existing component (or its test) is never overwritten without `--force`. On failure, `vuegc` prints the reason and exits with code `1`.
 
 ## Generated component
 
@@ -113,6 +115,27 @@ const emit = defineEmits<{
 </style>
 ```
 
+### Test
+
+`vuegc --name Card --props title --test` also generates `src/Card.spec.js`, a [Vitest](https://vitest.dev) test mounting the component with [Vue Test Utils](https://test-utils.vuejs.org):
+
+``` js
+import { describe, it, expect } from "vitest";
+import { mount } from "@vue/test-utils";
+import Card from "./Card.vue";
+
+describe("Card", () => {
+    it("renders", () => {
+        const wrapper = mount(Card, { props: { title: "title" } });
+
+        expect(wrapper.exists()).toBe(true);
+        expect(wrapper.text()).toContain("Card");
+    });
+});
+```
+
+It runs as is in a project made by `npm create vue@latest` with Vitest, which sets everything up. In another project, install `vitest`, `@vue/test-utils` and `jsdom`, and set `environment: "jsdom"` in the Vitest config; vuegc reminds you when `vitest` or `@vue/test-utils` is missing from `package.json`.
+
 ## Use as a library
 
 ``` js
@@ -122,7 +145,7 @@ const { vuegc } = require("vuegc");
 vuegc({ name: "HelloWorld", style: "css", scoped: true, path: "components", blank: false, force: false, cwd: process.cwd() });
 ```
 
-Every CLI flag has an option: `style`, `scoped`, `template`, `path`, `blank`, `force`, `dryRun`, `noTemplate`, `noScript`, `noStyle`, `props` and `emits` (arrays), `cssModule` (`--module`), `optionsApi` (`--options`), `ts`, plus `cwd`.
+Every CLI flag has an option: `style`, `scoped`, `template`, `path`, `blank`, `force`, `dryRun`, `noTemplate`, `noScript`, `noStyle`, `props` and `emits` (arrays), `cssModule` (`--module`), `optionsApi` (`--options`), `ts`, `test`, plus `cwd`.
 
 On failure, `vuegc()` throws instead of exiting; `errorHandler(err)` prints the same message as the CLI and exits.
 
