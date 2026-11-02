@@ -7,7 +7,7 @@ __     ___   _ _____ ____  ____
   \\ V / | |_| | |__| |_| | |___
    \\_/   \\___/|_____\\____|\\____|
 
-vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options] [--ts]
+vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options] [--ts] [--template pug] [--test] [--story]
 
 Required flag(s):
 --name:     Name of the component
@@ -20,12 +20,16 @@ Optional flag(s):
 --force:    Overwrite the component if it already exists [Default: false]
 --dry-run:  Print the component instead of writing it [Default: false]
 --no-template, --no-script, --no-style:
-            Leave the section out (at least one must remain) [Default: false]
+            Leave the section out (at least one must remain; without the template,
+            a script with --props, --emits or --options) [Default: false]
 --props:    Comma-separated prop names, declared with an open type [Default: none]
 --emits:    Comma-separated event names, e.g. update:modelValue [Default: none]
 --module:   CSS modules (<style module> + $style) instead of scoped [Default: false]
 --options:  Options API (export default { ... }) instead of <script setup> [Default: false]
 --ts:       TypeScript (lang="ts"): typed props and events [Default: false]
+--template: Template language [Default: html] [Value supported: html, pug]
+--test:     Also write a Vitest test next to the component (Name.spec.js, .spec.ts with --ts) [Default: false]
+--story:    Also write a Storybook story next to the component (Name.stories.js, .stories.ts with --ts) [Default: false]
 `);
     process.exit(0);
 }

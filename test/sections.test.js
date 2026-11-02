@@ -17,15 +17,18 @@ describe("vuegc --no-template / --no-script / --no-style", () => {
     beforeEach(() => { project = createVueProject(); });
     afterEach(() => { removeFolder(project); });
 
+    // Without a template, the script has something in it: Vue drops an empty <script setup> (#120)
     it.each([
-        { args: [],                                     expected: ["template", "script", "style"] },
-        { args: ["--no-template"],                      expected: ["script", "style"] },
-        { args: ["--no-script"],                        expected: ["template", "style"] },
-        { args: ["--no-style"],                         expected: ["template", "script"] },
-        { args: ["--no-template", "--no-script"],       expected: ["style"] },
-        { args: ["--no-template", "--no-style"],        expected: ["script"] },
-        { args: ["--no-script", "--no-style"],          expected: ["template"] },
-        { args: ["--no-style", "false"],                expected: ["template", "script", "style"] },
+        { args: [],                                                     expected: ["template", "script", "style"] },
+        { args: ["--no-template", "--props", "title"],                  expected: ["script", "style"] },
+        { args: ["--no-template", "--emits", "close"],                  expected: ["script", "style"] },
+        { args: ["--no-template", "--options"],                         expected: ["script", "style"] },
+        { args: ["--no-script"],                                        expected: ["template", "style"] },
+        { args: ["--no-style"],                                         expected: ["template", "script"] },
+        { args: ["--no-template", "--no-style", "--props", "title"],    expected: ["script"] },
+        { args: ["--no-script", "--no-style"],                          expected: ["template"] },
+        { args: ["--no-style", "false"],                                expected: ["template", "script", "style"] },
+        { args: ["--no-template", "false"],                             expected: ["template", "script", "style"] },
     ])("$args -> $expected", ({ args, expected }) => {
         const { status } = runVuegc(project, ["--name", "Hello", ...args]);
 
@@ -38,6 +41,20 @@ describe("vuegc --no-template / --no-script / --no-style", () => {
 
         expect(status).toBe(1);
         expect(stdout).toMatch(/A component needs at least one section/);
+        expect(readComponent(project, "Hello.vue")).toBeNull();
+    });
+
+    // These components don't compile: "At least one <template> or <script> is required" (#120)
+    it.each([
+        { args: ["--no-template"],                  message: "Without the template, the script needs content: add --props, --emits or --options, or keep the template" },
+        { args: ["--no-template", "--no-style"],    message: "Without the template, the script needs content" },
+        { args: ["--no-template", "--ts"],          message: "Without the template, the script needs content" },
+        { args: ["--no-template", "--no-script"],   message: "A component needs a template or a script: don't use --no-template with --no-script" },
+    ])("refuses $args, and writes nothing", ({ args, message }) => {
+        const { status, stdout } = runVuegc(project, ["--name", "Hello", ...args]);
+
+        expect(status).toBe(1);
+        expect(stdout).toContain(message);
         expect(readComponent(project, "Hello.vue")).toBeNull();
     });
 });
@@ -56,11 +73,11 @@ describe("vuegc({ noTemplate, noScript, noStyle })", () => {
 
     // Snapshots lock the layout: no leading empty line, one empty line between sections
     it.each([
-        { label: "no template",         options: { noTemplate: true } },
+        { label: "no template",         options: { noTemplate: true, props: ["title"] } },
         { label: "no script",           options: { noScript: true } },
         { label: "no style",            options: { noStyle: true } },
         { label: "template only",       options: { noScript: true, noStyle: true } },
-        { label: "script only, blank",  options: { noTemplate: true, noStyle: true, blank: true } },
+        { label: "script only, blank",  options: { noTemplate: true, noStyle: true, blank: true, optionsApi: true } },
     ])("matches the snapshot: $label", ({ options }) => {
         const content = fs.readFileSync(vuegc({ name: "HelloWorld", cwd: project, ...options }), "utf-8");
 
@@ -79,5 +96,13 @@ describe("vuegc({ noTemplate, noScript, noStyle })", () => {
         }
 
         expect(error).toMatchObject({ errno: 0x0006 });
+    });
+
+    it.each([
+        { label: "an empty <script setup>",    options: { noTemplate: true },                   noScript: false },
+        { label: "no script",                   options: { noTemplate: true, noScript: true },   noScript: true },
+    ])("throws 0x000F without the template and $label", ({ options, noScript }) => {
+        expect(() => vuegc({ name: "Hello", cwd: project, ...options })).toThrow(expect.objectContaining({ errno: 0x000F, noScript }));
+        expect(readComponent(project, "Hello.vue")).toBeNull();
     });
 });

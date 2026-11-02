@@ -28,6 +28,9 @@ exports[`vuegc({ noTemplate, noScript, noStyle }) > matches the snapshot: no sty
 
 exports[`vuegc({ noTemplate, noScript, noStyle }) > matches the snapshot: no template 1`] = `
 "<script setup>
+const props = defineProps({
+    title: null
+});
 </script>
 
 <style lang="css" scoped>
@@ -42,7 +45,15 @@ a { font-style: italic; }
 `;
 
 exports[`vuegc({ noTemplate, noScript, noStyle }) > matches the snapshot: script only, blank 1`] = `
-"<script setup>
+"<script>
+export default {
+    name: "HelloWorld",
+    props: { },
+    data() {
+        return { };
+    },
+    methods: { }
+}
 </script>
 "
 `;

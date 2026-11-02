@@ -17,7 +17,7 @@ Or run it without installing: `npx vuegc --name HelloWorld`.
 Run it at the root of a Vue 3 project (the folder that contains `src/main.js` or `src/main.ts`, creating the app with `createApp`, and `src/App.vue`), e.g. a Vite or Vue CLI 5 project:
 
 ``` sh
-vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options] [--ts]
+vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path components] [--blank] [--force] [--dry-run] [--no-template|--no-script|--no-style] [--props title,items] [--emits update,close] [--module] [--options] [--ts] [--template pug] [--test] [--story]
 ```
 
 | Flag | Description | Default |
@@ -29,12 +29,15 @@ vuegc --name HelloWorld.vue [--scoped [true|false]] [--style css] [--path compon
 | `--blank` | Empty template and style, without the demo content | `false` |
 | `--force` | Overwrite the component if it already exists | `false` |
 | `--dry-run` | Print the component instead of writing it; same checks as a real run | `false` |
-| `--no-template`, `--no-script`, `--no-style` | Leave the section out (at least one must remain) | `false` |
+| `--no-template`, `--no-script`, `--no-style` | Leave the section out (at least one must remain). Without the template, the component needs a script with something in it: `--props`, `--emits` or `--options` | `false` |
 | `--props` | Comma-separated prop names, e.g. `title,items`, declared as `title: null` (any type) | none |
 | `--emits` | Comma-separated event names, e.g. `update:modelValue,close`: `defineEmits([...])` / `emits: [...]` | none |
 | `--module` | CSS modules: `<style module>` and `:class="$style.root"` instead of `scoped` | `false` |
 | `--options` | Options API (`export default { name, props, data, methods }`) instead of `<script setup>` | `false` |
 | `--ts` | TypeScript: `lang="ts"`, typed `defineProps<{ … }>()` / `defineEmits<{ … }>()`, `defineComponent()` with `--options` | `false` |
+| `--template` | Template language: `html`, or `pug` (`<template lang="pug">`, needs the `pug` package) | `html` |
+| `--test` | Also write a Vitest test next to the component: `Name.spec.js` (`.spec.ts` with `--ts`) | `false` |
+| `--story` | Also write a Storybook story next to the component: `Name.stories.js` (`.stories.ts` with `--ts`) | `false` |
 | `--help`, `-h` | Show the help (also shown without any argument) | |
 
 Examples:
@@ -45,9 +48,12 @@ vuegc --name Button --path components/ui                # src/components/ui/Butt
 vuegc --name Card --props title,items --emits close     # props and events
 vuegc --name Card --ts --style scss --blank             # TypeScript, scss, empty
 vuegc --name Card --options                             # Options API
+vuegc --name Card --template pug                        # Pug template
+vuegc --name Card --path components --test              # and src/components/Card.spec.js
+vuegc --name Card --test --story                        # and src/Card.spec.js, src/Card.stories.js
 ```
 
-An existing component is never overwritten without `--force`. On failure, `vuegc` prints the reason and exits with code `1`.
+An existing component (or its test, or its story) is never overwritten without `--force`. On failure, `vuegc` prints the reason and exits with code `1`.
 
 ## Generated component
 
@@ -111,6 +117,49 @@ const emit = defineEmits<{
 </style>
 ```
 
+### Test
+
+`vuegc --name Card --props title --test` also generates `src/Card.spec.js`, a [Vitest](https://vitest.dev) test mounting the component with [Vue Test Utils](https://test-utils.vuejs.org):
+
+``` js
+import { describe, it, expect } from "vitest";
+import { mount } from "@vue/test-utils";
+import Card from "./Card.vue";
+
+describe("Card", () => {
+    it("renders", () => {
+        const wrapper = mount(Card, { props: { title: "title" } });
+
+        expect(wrapper.exists()).toBe(true);
+        expect(wrapper.text()).toContain("Card");
+    });
+});
+```
+
+It runs as is in a project made by `npm create vue@latest` with Vitest, which sets everything up. In another project, install `vitest`, `@vue/test-utils` and `jsdom`, and set `environment: "jsdom"` in the Vitest config; vuegc reminds you when `vitest` or `@vue/test-utils` is missing from `package.json`.
+
+### Story
+
+`vuegc --name Card --props title --emits close --story` also generates `src/Card.stories.js`, a [Storybook](https://storybook.js.org) story in Component Story Format 3, with the props as args and a spy for each event:
+
+``` js
+import { fn } from "storybook/test";
+import Card from "./Card.vue";
+
+export default {
+    component: Card
+};
+
+export const Default = {
+    args: {
+        title: "title",
+        onClose: fn()
+    }
+};
+```
+
+With `--ts`, `Card.stories.ts` is typed with `Meta` and `StoryObj` from `@storybook/vue3-vite`, like the stories Storybook generates. There is no `title`: Storybook names the story after the file's path (`src/components/Card.stories.js` → *components/Card*). Set up Storybook with `npm create storybook@latest`; vuegc reminds you when `storybook` is missing from `package.json`.
+
 ## Use as a library
 
 ``` js
@@ -120,7 +169,7 @@ const { vuegc } = require("vuegc");
 vuegc({ name: "HelloWorld", style: "css", scoped: true, path: "components", blank: false, force: false, cwd: process.cwd() });
 ```
 
-Every CLI flag has an option: `style`, `scoped`, `path`, `blank`, `force`, `dryRun`, `noTemplate`, `noScript`, `noStyle`, `props` and `emits` (arrays), `cssModule` (`--module`), `optionsApi` (`--options`), `ts`, plus `cwd`.
+Every CLI flag has an option: `style`, `scoped`, `template`, `path`, `blank`, `force`, `dryRun`, `noTemplate`, `noScript`, `noStyle`, `props` and `emits` (arrays), `cssModule` (`--module`), `optionsApi` (`--options`), `ts`, `test`, `story`, plus `cwd`.
 
 On failure, `vuegc()` throws instead of exiting; `errorHandler(err)` prints the same message as the CLI and exits.
 
